@@ -85,10 +85,53 @@ void multiply(int32_t * inst) {
     }
   }
 }
-void datatransfer(int32_t * inst) {}
+
+
+int32_t * getImmVal(int32_t * inst) {
+  static int32_t *value;
+  int32_t *rot_num;
+
+
+  for(int i = 0; i < 32; i++) {
+    *(value + i) = 0;
+  } 
+
+  for(int i = 0; i < 8; i++) {
+    *(value + i) = *(inst + i);
+  } 
+
+  for(int i = 8; i < 12; i++) {
+
+    *(value + i) = *(inst + i);
+  } 
+
+  return value;
+}
+
+int32_t * getRegVal(int32_t * inst) {
+  
+  return NULL;
+}
+
+int32_t * get_operand2(int32_t * inst) {
+  static int32_t *operand2;
+
+  if(*(inst + 25) == 1) {
+    operand2 = getImmVal(inst);
+  } else {
+    operand2 = getRegVal(inst);
+  }
+
+  return operand2;
+}
+
+
+void single_data_transfer(int32_t * inst) {
+
+}
 
 /*
-void datatransfer(int32_t * inst) {
+void single_data_transfer(int32_t * inst) {
   int32_t i = *(inst + 25);
   int32_t p = *(inst + 24);
   int32_t u = *(inst + 23);
@@ -106,12 +149,6 @@ void datatransfer(int32_t * inst) {
   }
 
 }
-
-
-
-int32_t immediate_reg(int32_t *array){}
-
-int32_t shifted_reg(int32_t *array){}
 
 */
 
@@ -147,7 +184,7 @@ void decode(int32_t * inst) {
   if (bit1 == 1 && bit2 == 0) {
     branch(inst);
   } else if (bit1 == 0 && bit2 == 1) {
-    datatransfer(inst);
+    single_data_transfer(inst);
   } else if (bit1 == 0 && bit2 == 0) {
     if (*(inst + 25) == 1) {
       dataprocessing(inst);
