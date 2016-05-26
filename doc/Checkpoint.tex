@@ -1,24 +1,46 @@
 \documentclass[11pt]{article}
 
 \usepackage{fullpage}
+\usepackage{verbatim}
 
 \begin{document}
 
-\title{ARM Checkpoint... }
-\author{TODO}
+\title{ARM Checkpoint - Group 40}
+\author{Tarun Sabbineni(L), Vinamra Agrawal, Tanmay Khanna, Balint Babik}
 
 \maketitle
 
+\begin{comment}
+On or before the 27th of May, you should submit to CATe a 1 page (2 A4-sides maximum) summary that outlines your your group working and implementation of the emulator. The report should include:
+
+• A statement on how you’ve split the work between group members and how you are co-ordinating your work.
+
+• A discussion on how well you think the group is working and how you imagine it might need to change for the later tasks.
+
+• How you’ve structured your emulator, and what bits you think you will be able to reuse for the assembler.
+
+• A discussion on implementation tasks that you think you will ﬁnd difficult / challenging later on, and how you are working to mitigate these.
+\end{comment}
+
+
 \section{Group Organisation}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+%A statement on how you’ve split the work between group members and how you are co-ordinating your work.
+Initially, we decided to write the binary file loader together as a group right after reading the project specification. We did this to ensure that all the group members were all on the same page. This was key, as it meant that we were able to share our thoughts and correct each other on our understanding of the specification before we started to write the code. We also made sure that we fully understood how we were going to co-ordinate our work using Git as a version control system and decided that having a separate branch for each group member would be a suitable strategy. 
+\paragraph{}
+After writing the binary file loader, we were able to then start the pipeline of the emulator and we again wrote the code together again. This was done by taking turns to write the code whilst another member would research the functions that we were required to use on the internet and within the lecture notes whilst the other group members would monitor the logic of the code that was written. By not splitting up the work, we were able to avoid conflicts that would've been caused by the version control system. These conflicts would've been caused due to us working on the same part of the same file separately. 
+\paragraph{}
+It was when we were programming the four instructions that we decided to split up the work more. At this point, we were fairly confident on the general syntax and coding style for C as a programming language so we were able to avoid simple syntax errors that we encountered earlier.  Rather than assigning each of the four instructions to a separate group member, we instead decided to split the group into two groups of two to tackle the simpler instructions first, being multiply and branch. Then we worked in the same two groups of two in order to write the two halves of the common function that both of the more complicated instructions would use. We were able to further split up this helper function between the two members if necessary. Then we switched the groups slightly so that now two different group members would be able to tackle the Single Data Transfer instruction and the other two would work on the Data Processing instruction. 
+\paragraph{}
+As one group ran into problems in Data Processing instruction, in order to be able to start testing immediately, the other group started to program the last two parts of emulate that would be responsible for the termination of the system upon an all-0 instruction and the outputting of the registers and non-zero memory. The group that were previously working on the Data Processing part were able to help with this after they finished their part.
+\paragraph{}
+The final step was to debug our program using the test suite that we have been kindly provided with. We started debugging together in order to determine what functions were at fault and then we were able to split up the debugging of the different functions between group members. After debugging, the group leader was able to assess the progress we have made so far as a group in the last week and write this checkpoint report and then formatted the code in one particular style whilst the other members added comments when necessary in order to make the code more readable.
+
+%A discussion on how well you think the group is working and how you imagine it might need to change for the later tasks.
 
 \section{Implementation Strategies}
+% How you’ve structured your emulator, and what bits you think you will be able to reuse for the assembler.
+ %A discussion on implementation tasks that you think you will ﬁnd difficult / challenging later on, and how you are working to mitigate these.
 
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
@@ -28,3 +50,4 @@ fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.
 
 \end{document}
+\textbf{}
