@@ -467,6 +467,8 @@ void regInit(){
 
   currState = calloc(1,sizeof(CurrentState));
   currState->pipeline = calloc(1,sizeof(Pipeline));
+  currState->pipeline->fetched = NULL;
+  currState->pipeline->decoded = NULL;
 
   if (currState == NULL || currState->pipeline == NULL) {
       perror("coudn't initialize state");
@@ -552,21 +554,30 @@ int32_t main(int32_t argc, char **argv) {
   int8_t* byte; 
  
   while (1) {
+    // execute decode if we can
+    if (currState->pipeline->decoded != NULL){ 
+      decode(currState->pipeline->decoded);
+    }
+    // put fetched into decoded if we can
+    currState->pipeline->decoded = currState->pipeline->fetched;
+    // put mem into fetched
     byte = fetchInstruction(currState->memory);
     currState->pipeline->fetched = instrToBits(byte);
+
+
 //    for (int i = 31; i >= 0; i--){
 //    printf("%d", *(currState->pipeline->fetched + i));}
 //    printf("\n");
 //    printf("While loop called.\n");
-    if (allZeroes(currState->pipeline->fetched) == 1) {
+    if (allZeroes(currState->pipeline->decoded) == 1) {
       free(byte);
       currState->PC += 4;
       break;
     }
+
     if (byte != NULL) {
       free(byte);
     }                     // free instruction memory
-    decode(currState->pipeline->fetched);
   }    
 
   //Outputting the state of Registers and non-zero memory
