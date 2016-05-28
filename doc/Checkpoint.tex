@@ -34,20 +34,23 @@ It was when we were programming the four instructions that we decided to split u
 \paragraph{}
 As one group ran into problems in Data Processing instruction, in order to be able to start testing immediately, the other group started to program the last two parts of emulate that would be responsible for the termination of the system upon an all-0 instruction and the outputting of the registers and non-zero memory. The group that were previously working on the Data Processing part were able to help with this after they finished their part.
 \paragraph{}
-The final step was to debug our program using the test suite that we have been kindly provided with. We started debugging together in order to determine what functions were at fault and then we were able to split up the debugging of the different functions between group members. After debugging, the group leader was able to assess the progress we have made so far as a group in the last week and write this checkpoint report and then formatted the code in one particular style whilst the other members added comments when necessary in order to make the code more readable.
+The final step was to debug our program using the test suite that we have been kindly provided with. We started debugging together in order to determine what functions didn't pass the tests and then we were able to split up the debugging of the different functions between group members who originally wrote the code. Whilst debugging, the group leader was able to assess the progress we have made so far as a group in the last week and write this checkpoint report. Whilst most of the test cases pass, two of us endeavor to pass all of the test cases whilst profiling and format our code in one particular style by adding comments when necessary by the end of this weekend. The other two members have started working on parts two and three which we are expecting to complete by the end of next week. 
 
+\paragraph{}
 %A discussion on how well you think the group is working and how you imagine it might need to change for the later tasks.
+All in all, the group is working well on resolving problems such as understanding each other's code by communicating quickly and effectively with each other. We are meeting up and discussing ideas frequently which means that the communication between the group members is good. We seem to also be doing well at setting smaller checkpoints between ourselves in order to track our progress so that we are able to keep to deadlines. It also helps us track our progress to ensure that we are working well enough. 
+
+We realised that at certain points in the last week, we didn't require four group members working on the same part. Therefore, we feel that splitting up our work more often would be more efficient by parallelising the programming process. We also would like to work on having a more regular schedule for working. Such as more regular timings for meetings and working more consistently throughout the week in order to avoid having to work an uneven number of hours towards the latter part of the week.
 
 \section{Implementation Strategies}
-% How you’ve structured your emulator, and what bits you think you will be able to reuse for the assembler.
- %A discussion on implementation tasks that you think you will ﬁnd difficult / challenging later on, and how you are working to mitigate these.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+% How you’ve structured your emulator, and what bits you think you will be able to reuse for the assembler.
+Ultimately, we have created several header files and C files in order to help us efficiently use the functions defined in the source files without code duplication. For example, we have created a C file called bitOper.c which contains all the binary operation functions that we have used in emulate.c. By collecting all the bit-wise operator functions and placing them in a separate C file which we would then import, it would make searching and navigating code a lot easier. This is because we now will know exactly where those types of functions are whilst debugging or otherwise. The functions in bitOper.c will be reusable in other parts of the project such as the assembler where we think they will be required again. Especially helper functions such as the ones that convert between binary and decimal as well as the functions that perform shifts on their arguments.
+
+ARMgen is a header file that contains the main structure of the Raspberry Pi such as the memory capacity, number of registers, number of bytes per instruction and so. It also contains the declarations of the functions that are called in both emulate and the bitOper C files and most importantly, it contains the vital structures that we access through the whole program being the pipeline and the current state.
+
+\paragraph{}
+%A discussion on implementation tasks that you think you will ﬁnd difficult / challenging later on, and how you are working to mitigate these.
+We foresee the debugging of the output files in binary being difficult as we would have to carefully match it with its respective instruction command in binary. We think that coming across an ADT for the first time in C and programming one for the symbol table that will be built during the two passes in the assembler will be challenging. Using a tokenizer to deal with labels and string processing using it will be challenging too. 
 
 \end{document}
-\textbf{}
