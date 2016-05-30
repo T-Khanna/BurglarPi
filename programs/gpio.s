@@ -24,13 +24,13 @@ loop:
 
   str r2, [r1]
 
-  ; Create delay between turning LEDs off
+  ; Create delay between turning LEDs off //TODO
   wait_to_clear: 
     
 
   str r2, [r0]
 
-  ; Create delay between turning LEDs on
+  ; Create delay between turning LEDs on //TODO
   wait_to_set:
 
 
