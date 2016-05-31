@@ -6,21 +6,29 @@
 // Members: Tarun Sabbineni, Vinamra Agrawal, Tanmay Khanna, Balint Babik
 ////////////////////////////////////////////////////////////////////////////////
 
+
+//----------------------------- GPIO HELPER  -----------------------------------
+// Contains the function definitions for emulate.c, the execute function in 
+// particular to carry out the four instructions specified.
+
+#include <stdio.h>
 #include "ARMgen.h"
 #include "gpio_helper.h"
-#include <stdio.h>
-
-#define GPIO_ADDR_0_9			      0x20200000
-#define GPIO_ADDR_10_19		    	0x20200004
-#define GPIO_ADDR_20_29			    0x20200008
-#define GPIO_ADDR_SET		  	    0x2020001C
-#define GPIO_ADDR_CLEAR	    		0x20200028
 
 
 
-//-- FUNCTIONS -----------------------------------------------------------------
+//-- CONSTANTS -----------------------------------------------------------------
 
-//sets addresses as the values of the GPIO pins
+#define GPIO_ADDR_0_9		0x20200000
+#define GPIO_ADDR_10_19	0x20200004
+#define GPIO_ADDR_20_29	0x20200008
+#define GPIO_ADDR_SET		0x2020001C
+#define GPIO_ADDR_CLEAR	0x20200028
+
+
+//-- FUNCTION DEFINITIONS ------------------------------------------------------
+
+//sets addresses as the values of the GPIO pins in memory
 void setGPIOAddr(current_state* cur_state) {
   
 	cur_state->memory[MEMORY_CAPACITY - 3] = GPIO_ADDR_0_9;
@@ -29,26 +37,26 @@ void setGPIOAddr(current_state* cur_state) {
 
 }
 
-//clears addresses in memory of the GPIO pins
+//clears addresses of the GPIO pins in memory
 void clearGPIOAddr(current_state* cur_state) {
 
-	cur_state->memory[MEMORY_CAPACITY - 1] = 0;
-	cur_state->memory[MEMORY_CAPACITY - 2] = 0;
 	cur_state->memory[MEMORY_CAPACITY - 3] = 0;
+	cur_state->memory[MEMORY_CAPACITY - 2] = 0;
+	cur_state->memory[MEMORY_CAPACITY - 1] = 0;
 
 }
 
-//converts address of GPIO pins to last memory addresses
-int convGPIOAddr(int* addr) {
+//finds the address of GPIO pins that have been accessed
+int findGPIOAddr(int* addr) {
 
   switch(*addr) {
 
-    //SET PIN ADDRESS
+    //set the pin addresses
     case GPIO_ADDR_SET:
       printf("PIN ON\n");
       return 1;
 
-		//CLEAR PIN ADDRESS
+		//clear the pin addresses
 		case GPIO_ADDR_CLEAR:
 			printf("PIN OFF\n");
 			return 1;
@@ -73,8 +81,9 @@ int convGPIOAddr(int* addr) {
 
 	}
 
-	*addr = ((MEMORY_CAPACITY - ((*addr - GPIO_ADDR_10_19) / 4)) - 1) * 4;
+	*addr = ((MEMORY_CAPACITY - ((*addr - GPIO_ADDR_0_9) / 4)) - 1) * 4;
 	return 0;
+
 }
 
 
