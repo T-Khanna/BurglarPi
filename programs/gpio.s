@@ -14,25 +14,33 @@ str r1, [r0]
 ; Store important addresses
 ldr r0, =0x20200028               ; Clear address
 ldr r1, =0x2020001C               ; Set address
-ldr r2, =0x00010000               ; Change state of pin
+ldr r2, =0x00010000               ; Change state of pin 16
 
-; Clear bit before setting
+; Clear pin before setting
 str r2, [r0]
 
 ; Program to turn pin on/off
 loop:
 
+  ; Set pin
   str r2, [r1]
 
-  ; Create delay between turning LEDs off //TODO
-  wait_to_clear: 
-    
+  ; Create delay before clearing pin 
+  ldr r3, =0x10000000
+  wait_to_clear:
+    sub r3, r3, #1
+    cmp r3, #0
+    bne wait_to_clear 
 
+  ; Clear pin
   str r2, [r0]
 
-  ; Create delay between turning LEDs on //TODO
+  ; Create delay before setting pin 
+  ldr r3, =0x10000000
   wait_to_set:
-
+    sub r3, r3, #1
+    cmp r3, #0
+    bne wait_to_set 
 
   b loop
 
