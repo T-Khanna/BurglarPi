@@ -1,4 +1,4 @@
-#! /home/balint/.rvm/rubies/ruby-1.9.1-p431 ruby1.9.1
+#!/usr/bin/env ruby1.9.1
 
 $:.unshift(File.join(File.dirname(__FILE__), "lib", "json_pure-1.5.3", "lib"))
 $:.unshift(File.join(File.dirname(__FILE__), "lib"))
