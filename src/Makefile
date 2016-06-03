@@ -1,5 +1,5 @@
 CC      = gcc
-CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
+CFLAGS  = -Wall -g -D_BSD_SOURCE -std=gnu99 -Werror -pedantic
 
 .SUFFIXES: .c .o
 
@@ -7,9 +7,9 @@ CFLAGS  = -Wall -g -D_POSIX_SOURCE -D_BSD_SOURCE -std=c99 -Werror -pedantic
 
 all: assemble emulate
 
-assemble: assemble.o
+assemble: assemble.o double_Linked_List.o OPFunctions.o bitOper.o tokeniser.o
 
-emulate: emulate.o bitOper.o
+emulate: emulate.o bitOper.o execute_helper.o gpio_helper.o
 
 clean:
 	rm -f $(wildcard *.o)
