@@ -16,6 +16,7 @@ emulate:
 	cp emulator/emulate .
 
 clean:
+	rm -f $(wildcard *.o)
 	rm -f assemble emulate
 	make clean -C assembler/
 	make clean -C emulator/
