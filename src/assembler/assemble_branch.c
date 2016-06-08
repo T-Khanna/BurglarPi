@@ -2,19 +2,15 @@
 #include "ARMasm.h"
 
 // Branch
-/* 
-  For each of these instructions, there is only one operand. Due to the way
-  we assigned the enum value to the function, the condition is always the
-  mnemonic_code - 16. Bits 27-24 are 1010. Remaining is the 26-bit signed
-  offset between the current address and the label, which should be shifted
-  right two bits, only storing the lower 24 bits. This must also take into
-  account the off-by-8 bytes effect from the ARM pipeline.
-*/
 
 int32_t calculate_branch(enum mnemonic_code cond, char* operand) {
   cond -= 16;
+  // Get the number from the string
   int32_t line_diff = strtol(operand, NULL, 10);
+  // Need to account for the off-by-8 bytes effect from the ARM pipeline
   int32_t offset = line_diff * INSTRUCTION_BYTE_SIZE - PIPELINE_OFFSET;
+  /* Bits 27-24 are always the same (1010). We want to shift the offset
+     to the right by 2 and then store the lower 24 bytes in the instruction. */
   return (cond << 28) | 0x0a000000 | ((offset >> 2) & 0x00ffffff);
 }
 
