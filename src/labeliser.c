@@ -14,11 +14,6 @@
 
 int label_count = 0;
  
-//-- FUNCTION DECLARATIONS ----------------------------------------------------
-
-void labeliser(char* line, int line_num);
-void store_labels(char assem_instrs[MAX_LINES][CHAR_LIMIT], int num_of_lines);
-
 //-- LABELISER ----------------------------------------------------------------
 
 // Check if the first token is a label or not.

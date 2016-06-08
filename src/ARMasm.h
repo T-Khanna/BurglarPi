@@ -120,7 +120,6 @@ uint32_t ASMbge(char* operands[]);
 
 uint32_t ASMblt(char* operands[]);
 
-
 uint32_t ASMbgt(char* operands[]);
 
 uint32_t ASMble(char* operands[]);
