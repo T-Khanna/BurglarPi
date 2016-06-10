@@ -4,18 +4,79 @@
 
 \begin{document}
 
-\title{Our Extension...}
-\author{TODO}
+\title{ARM - Assembler and Extension}
+\author{Tarun Sabbineni (L), Vinamra Agrawal, Tanmay Khanna, Balint Babik}
 
 \maketitle
 
 \section{Introduction}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+\subsection{Structure and implementation of Assembler}
+% • How you’ve structured and implemented your assembler.
+
+% Two pass explanation
+For the structure of our assembler, we have chosen to do a two pass implementation. We have split the assembler into these main stages: 
+
+1. Get instructions - First we store the instructions directly from the source file into an array of strings. This stage ignores any empty or comment lines in the source code. Crucially however, lines that begin with a label are read and stored in the array. 
+
+2. Store labels - This stage updates the symbol table with all of the labels and their relative positions in the source code. This is needed to for the calculation of the branch instructions.
+
+3. Tokenise lines - This stage takes one line at a time and splits it into tokens. We make use of a custom structure we've defined as \textbf{tokenised}, which stores a function pointer and a pointer to the operands for the instruction. During the process of tokeniser, we detect which instruction we are currently dealing with by checking the first token in the line, making use of the function pointer in our tokenised structure. During this process, we also store the operands (the remaining tokens after the first) into our tokenised structure.
+
+4. Process instructions - This is where we convert the instruction from it's source format into binary. We call a function, \textbf{command processor}, which, using the function pointer and operands from the tokenised structure, assigns the instruction to the appropriate function. This returns the binary equivalent for the input instruction.
+
+5. Writing to file - We simply just write the binary instructions obtained from the previous stage into the file.
+
+\subsection{Description of extension}
+% A description of your extension, including an example of its use.
+For our extension, we have decided to build a burglar alarm using our raspberry pi and the C programming language.  Once the alarm is turned on using the appropriate PIN, the PIR sensor would require half a minute to settle. This would give the homeowner sufficient time to leave the room or house. Then, if a person is detected by the sensor using Infra Red rays, then the buzzer will sound in short bursts for a few seconds requesting a pin to be entered. If the correct PIN is not entered within the time limit, then the buzzer will sound continuously. We use the two coloured LEDs to represent the current state of the alarm. The Red LED shows that the alarm is armed whilst the Blue LED shows that the alarm is disarmed when lit. We are also planning on notifying the homeowner when such an incident happens using e-mail and implementing graphics to show the state of the alarm (armed or disarmed) and the graphical user interface for entering a PIN. 
+
+\section{Design and Implementation of Extension}
+
+\subsection{Design of extension}
+% • High-level details of the design
+We have ordered a kit that contained all the appropriate components such as the PIR (Passive Infra-Red) sensor, Red and Blue LEDs and a buzzer. We are using a C library called WiringPi in order to process our GPIO (General Purpose Input Output) commands in order to interact with the components that we have.  This library provides us with a delay function that we will use to give the homeowner plenty of time to exit the room or house that the alarm guards after arming the system using a passcode. After the delay, the PIR sensor will be activated and will settle. Then our program reads the input from the PIR sensor and if it detects a change, it will write the output being the buzzer so that it turns on. Its only when someone enters the correct PIN that the buzzer turns off. Otherwise, it keeps on buzzing. We will detect the correct pin by reading input from the command line whilst hashing the input out and there can only be a maximum of 5 attempts until the system is locked out. 
+TODO: Other two can add more onto this. Has to be "High-Level" details though.
+
+\subsection{Challenges in implementation of extension}
+% a discussion of any challenges/problems that had to be overcome during the extension’s implementation
+We came across our first challenge for the extension when trying to implement the PIR sensor.
+Debating the UI structuring passionately 
+General hardware issues such as wrong pin settings
+Making I/O of the components work correctly
+TODO: Other two have more to say about this.
+
+\subsection{Testing the implementation}
+% • A description of how you have tested your implementation, and a discussion of how eﬀective you believe this testing to be.
+TODO: Haven't tested yet
+
+\section{Reflection}
+
+\subsection{Group reflection}
+% • A group reﬂection on programming in a group. This should include a discussion on how eﬀective you believe your way of communicating and splitting work between the group was, and things you would do differently or keep the same next time.
+Despite the very little experience some of us had with C, we have been able to adapt very well to the language. Due to this, however, initial progress was slow as we were slowly getting accustomed to the language. To work around this, we should have had more regular timings with our meetings. In general, our communication has been very good and clear. The structure we have laid out for our programs has been intuitive and clear to understand, though for the emulator it was not clear initially. One thing we could have done better is to have allocated more time in setting up the structure for emulator, as that ended up taking much longer than we had initially anticipated. We learned and accounted for this during the assembler. 
+
+
+\subsection{Individual reflections}
+% • Individual reﬂections (at least one paragraph per group member). Using both sets of WebPA feedback, and other experiences, reﬂect on how you feel you ﬁtted into the group. For example, what your strengths and weaknesses turned out to be compared to what you thought they might be or things you would do diﬀerently or maintain when working with a diﬀerent group of people.
+
+\subsubsection{Tarun Sabbineni}
+As this project was a much larger scale than any other we have done before, i have learnt that planning and organisation was key to this project. Especially as the group leader, it was very important to setup group meetings and make sure that the communication and motivation within the group was the best it could be. Although the general feedback from WebPA that i received was positive, i have learnt from the others that they valued the communication and planning and i tried to further improve on that to make it my strength. Having no knowledge of C before this project meant that i couldn't contribute to the code as efficiently initially compared to others that had slightly more experience. Therefore, coding with another group member was much more efficient than independently as we could correct each other on simple mistakes. However, as the days progressed, my confidence in programming in C increased and i was able to contribute a lot more than initially and could code independently effectively. 
+
+
+\subsubsection{Vinamra Agrawal}
+This project was really a enjoyable learning experience, I gained more experience in C and assembly whilst at the time experimented I/O functions and working with my friends. I learned how to respect others decisions, work in a group efficiently and the importance of keeping everyone updated and involved. The feedback from WebPA, helped me appreciate my  strength for working tirelessly, debugging and taking charge for things, and tackle my weaknesses as keeping everyone updated whilst being even more polite with my design and opinions. Not only have I learned C from the group of amazing people I worked with but I also learned skills such as going out of the way to help others and to work in sync people's schedule.   Overall, I think I it was a great experience and I feel much more confident for working in groups after this project.  
+
+
+\subsubsection{Tanmay Khanna}
+Throughout the duration of the project, my knowledge and confidence in C has improved immensely. I have gained valuable experience in learning how to split the work amongst the group in order to complete the set deadlines with the utmost efficiency. I have also gained more experience in using git as part of a group, which involved working on separate branches. My communication skills in the group have been very good, as the feedback I have received has shown me. Overall, this has been a very good experience and the group environment has been very good.
+
+
+\subsubsection{Balint Babik}
+TODO:
+
 
 \end{document}
+
+
+
