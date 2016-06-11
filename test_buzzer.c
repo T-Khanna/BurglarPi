@@ -8,6 +8,7 @@
 #define BLUEPIN 24
 #define BUZZERPIN  22
 #define TEST_BUZZER_TIME 2000
+#define MAX_PASSWORD_LEN 10
 #define KEY 0xFACA
 
 enum Alarm_state {
@@ -23,8 +24,7 @@ char* printAlarmState();
 void executeOption(int opt);
 void printSettings();
 void printLog();
-void encrypt();
-void decrypt();
+void encrypt_decrypt();
 void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
@@ -93,12 +93,12 @@ int getAuthentication(){
     exit(1);
    }
 
-   char password[10];
+   char password[MAX_PASSWORD_LEN];
    
    fscanf(fptr, "%s", password);
-   decrypt(password);
+   encrypt_decrypt(password);
 
-   char input[10];
+   char input[MAX_PASSWORD_LEN];
 
    for (int i = 5; i > 0; i--){
       scanf("%s",input);
@@ -183,9 +183,9 @@ void printSettings(){
        case 1: printf("Enter current password: \n");
                if(getAuthentication()){
                  printf("Correct! Enter new password: \n");
-                 char password[10];
+                 char password[MAX_PASSWORD_LEN];
                  scanf("%s",password);
-                 encrypt(password);
+                 encrypt_decrypt(password);
                  fptr = fopen("password.txt", "w");
                  fwrite(password, sizeof(password), 1, fptr);
                  fclose(fptr);
@@ -246,19 +246,15 @@ void printLog(){
  //TODO
 }
 
-void encrypt(char password[10]){
+void encrypt_decrypt(char *password){
 
-  for (int i = 0; i < strlen(password); i++) {
-    password[i] = password[i] - KEY;
-  }
+  char key[] = "AHFLSHENDHSOGKNASBBKJKDVVKASHDASHBDASLLUHSC"; 
+	
+	for(int i = 0; i < strlen(password); i++) {
 
-}
+		password[i] = password[i] ^ key[i % (sizeof(key)/sizeof(char))];
 
-void decrypt(char password[10]){
-
-  for (int i = 0; i < strlen(password); i++) {
-    password[i] = password[i] + KEY;
-  }
+	}
 
 }
 
