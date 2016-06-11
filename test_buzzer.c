@@ -29,6 +29,8 @@ void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
 
+char* email = "";
+
 int introductionMenu(){
 
    //clear menu screen
@@ -206,7 +208,7 @@ void printSettings(){
                  printf("Unable to password file\n");
                  exit(1);
                }
-               char* email = malloc(sizeof(char)*50);
+               email = malloc(sizeof(char)*50);
                fscanf(fptr, "%s", email);
          
                printf("Current email: %s\n", email);

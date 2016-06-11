@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
+#include "test_buzzer.c"
  
 /* This is a simple example showing how to send mail using libcurl's SMTP
  * capabilities. It builds on the smtp-mail.c example to add authentication
@@ -37,22 +38,27 @@
  * Note that this example requires libcurl 7.20.0 or above.
  */ 
  
-#define FROM    "<sender@example.org>"
-#define TO      "<addressee@example.net>"
+#define FROM    "burglarpi@gmail.com"
+#define TO      "tsabbineni@gmail.com" //TODO: Needs to be a variable
+//#define TO      "<addressee@example.net>"
 #define CC      "<info@example.org>"
+//#define TO      "<addressee@example.net>"
+//#define CC      "<info@example.org>"
+
+extern char* email;
  
 static const char *payload_text[] = {
   "Date: Mon, 29 Nov 2010 21:54:29 +1100\r\n",
-  "To: " TO "\r\n",
+  "To: ", email , "\r\n",
   "From: " FROM "(Example User)\r\n",
   "Cc: " CC "(Another example User)\r\n",
   "Message-ID: <dcd7cb36-11db-487a-9f3a-e652a9458efd@"
   "rfcpedant.example.org>\r\n",
-  "Subject: SMTP TLS example message\r\n",
+  "Subject: ATTENTION: Burglar Detected.\r\n",
   "\r\n", /* empty line to divide headers from body, see RFC5322 */ 
-  "The body of the message starts here.\r\n",
+  "Your burglar alarm has detected movement at your house.\r\n",
   "\r\n",
-  "It could be a lot of lines, could be MIME encoded, whatever.\r\n",
+  //"It could be a lot of lines, could be MIME encoded, whatever.\r\n",
   "Check RFC5322.\r\n",
   NULL
 };
@@ -95,14 +101,14 @@ int sendEmail(void)
   curl = curl_easy_init();
   if(curl) {
     /* Set username and password */ 
-    curl_easy_setopt(curl, CURLOPT_USERNAME, "user");
-    curl_easy_setopt(curl, CURLOPT_PASSWORD, "secret");
+    curl_easy_setopt(curl, CURLOPT_USERNAME, "burglarpi@gmail.com");
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, "imperial15");
  
     /* This is the URL for your mailserver. Note the use of port 587 here,
      * instead of the normal SMTP port (25). Port 587 is commonly used for
      * secure mail submission (see RFC4403), but you should use whatever
      * matches your server configuration. */ 
-    curl_easy_setopt(curl, CURLOPT_URL, "smtp://mainserver.example.net:587");
+    curl_easy_setopt(curl, CURLOPT_URL, "smtp.gmail.com:546");
  
     /* In this example, we'll start with a plain text connection, and upgrade
      * to Transport Layer Security (TLS) using the STARTTLS command. Be careful
@@ -136,7 +142,8 @@ int sendEmail(void)
     /* Add two recipients, in this particular case they correspond to the
      * To: and Cc: addressees in the header, but they could be any kind of
      * recipient. */ 
-    recipients = curl_slist_append(recipients, TO);
+    //recipients = curl_slist_append(recipients, TO); 
+    recipients = curl_slist_append(recipients, email); 
     recipients = curl_slist_append(recipients, CC);
     curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
  
