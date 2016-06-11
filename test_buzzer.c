@@ -38,8 +38,8 @@ int introductionMenu(){
    
    printf("Welcome to Burglar Alarm System\n\n\n");
 
-   printf("Developed by Balint Babik, Tanmay Khanna, ");
-   printf("Tarun Sabbinieni and Vinamra Agrawal\n\n\n\n"); 
+   printf("Developed by Tarun Sabbineni, Vinamara Agrawal, ");
+   printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
          
    delay(1000);
 
@@ -95,8 +95,8 @@ int getAuthentication(){
     exit(1);
    }
 
+   //decrypting after opening from file to compare with input
    char password[MAX_PASSWORD_LEN];
-   
    fscanf(fptr, "%s", password);
    encrypt_decrypt(password);
 
@@ -184,13 +184,17 @@ void printSettings(){
 
        case 1: printf("Enter current password: \n");
                if(getAuthentication()){
+
                  printf("Correct! Enter new password: \n");
                  char password[MAX_PASSWORD_LEN];
                  scanf("%s",password);
+
+                 //encrypting before storing in file
                  encrypt_decrypt(password);
                  fptr = fopen("password.txt", "w");
                  fwrite(password, sizeof(password), 1, fptr);
                  fclose(fptr);
+
                  printf("password changes successfully\n");
                  delay(1000);
                  printf("Returning to main menu\n");
