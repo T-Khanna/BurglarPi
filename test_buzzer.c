@@ -1,13 +1,14 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<wiringPi.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <wiringPi.h>
 
 #define PIRPIN  17
 #define REDPIN  18
 #define BLUEPIN 24
 #define BUZZERPIN  22
 #define TEST_BUZZER_TIME 2000
+#define KEY 0xFACA
 
 enum Alarm_state {
  ON,
@@ -22,6 +23,8 @@ char* printAlarmState();
 void executeOption(int opt);
 void printSettings();
 void printLog();
+void encrypt();
+void decrypt();
 void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
@@ -90,9 +93,10 @@ int getAuthentication(){
     exit(1);
    }
 
-   char* password = malloc(sizeof(char) * 10);
+   char password[10];
    
    fscanf(fptr, "%s", password);
+   decrypt(password);
 
    char input[10];
 
@@ -112,7 +116,6 @@ int getAuthentication(){
    }
 
    fclose(fptr);
-   free(password);
 
    return 0;
 }
@@ -182,6 +185,7 @@ void printSettings(){
                  printf("Correct! Enter new password: \n");
                  char password[10];
                  scanf("%s",password);
+                 encrypt(password);
                  fptr = fopen("password.txt", "w");
                  fwrite(password, sizeof(password), 1, fptr);
                  fclose(fptr);
@@ -242,6 +246,21 @@ void printLog(){
  //TODO
 }
 
+void encrypt(char password[10]){
+
+  for (int i = 0; i < strlen(password); i++) {
+    password[i] = password[i] - KEY;
+  }
+
+}
+
+void decrypt(char password[10]){
+
+  for (int i = 0; i < strlen(password); i++) {
+    password[i] = password[i] + KEY;
+  }
+
+}
 
 void run_alarm(enum Alarm_state state) {
   
