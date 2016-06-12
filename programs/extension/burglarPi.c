@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <wiringPi.h>
+#include <process.h>
+#include "terminated.h"
 
 #define PIRPIN  17
 #define REDPIN  18
@@ -29,6 +32,7 @@ int send_email();
 void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
+extern int terminated;
 
 int introductionMenu(){
 
@@ -342,10 +346,15 @@ void run_alarm(enum Alarm_state state) {
 
     while(1) {
       // PRE: Someone walks in.
+      //system("./send_limit");
+      spawnlp(P_NOWAIT, send_limit, {NULL});
       if(digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
+        set_off_time = time();
+
         if (getAuthentication()) {
         digitalWrite(BUZZERPIN, LOW);
+        terminated = 1;
         }  
         break; 
       }
