@@ -25,11 +25,10 @@ void executeOption(int opt);
 void printSettings();
 void printLog();
 void encrypt_decrypt();
+int send_email();
 void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
-
-char* email = "";
 
 int introductionMenu(){
 
@@ -112,6 +111,7 @@ int getAuthentication(){
        printf("Incorrect password %i attempts left\n",i-1);
       } else {
       printf("You have been visited by the lockout meme.\nUpboat this 5 times on leddit or the unlocking skeltal will never come to you.\n");
+      send_email();
       run_alarm(OFF);
       }
    }
@@ -213,6 +213,7 @@ void printSettings(){
                }
                email = malloc(sizeof(char)*50);
                fscanf(fptr, "%s", email);
+               //encrypt_decrypt(email);
          
                printf("Current email: %s\n", email);
               
@@ -229,6 +230,7 @@ void printSettings(){
                   printf("Enter new administration email address:\n");
                   char input[50];
                   scanf("%s",input);
+                  //encrypt_decrypt(input);
                   fwrite(email, sizeof(input), 1, fptr);
                   fclose(fptr);
                
@@ -262,6 +264,46 @@ void encrypt_decrypt(char *password){
 	}
 
 }
+
+int send_email() {
+
+  //obtaining email stored in file
+  email = malloc(sizeof(char)*50);
+  fscanf(fptr, "%s", email);
+  fclose(fptr);
+
+
+  //constructing appropriate command to send email
+  char cmd[500];
+
+  strcat(cmd, "curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
+               --mail-from \"burglarpi@gmail.com\" \
+               --mail-rcpt \"");
+
+  strcat(cmd, email);
+
+  strcat(cmd, "\" \
+               --upload-file mail.txt \
+               --user \"burglarpi@gmail.com:imperial15\" --insecure \
+               &>/dev/null &");
+
+
+  //calling appropriate command to send email
+  system(cmd);
+
+  //working code to help debug
+  //system("curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
+  //             --mail-from \"burglarpi@gmail.com\" \
+  //             --mail-rcpt \"tsabbineni@gmail.com\" \
+  //             --upload-file mail.txt \
+  //             --user \"burglarpi@gmail.com:imperial15\" --insecure \
+  //             &>/dev/null &");
+
+  puts("ATTENTION: The homeowner has been notified of this incident.");
+
+  return 0;
+}
+
 
 void run_alarm(enum Alarm_state state) {
   
