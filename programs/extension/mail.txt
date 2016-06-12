@@ -1,0 +1,10 @@
+From: "BurglarPi" <BurglarPi@gmail.com>
+To: "Homeowner"
+Subject: ATTENTION: Burglar Detected
+
+Dear Homeowner,
+
+Your BurglarPi has detected movement in your home. Please take action appropriately.
+
+Thank you,
+BurglarPi Team
