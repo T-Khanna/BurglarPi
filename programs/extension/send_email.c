@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
-#include "test_buzzer.c"
+#include "burglarPi.c"
  
 /* This is a simple example showing how to send mail using libcurl's SMTP
  * capabilities. It builds on the smtp-mail.c example to add authentication
