@@ -1,11 +1,12 @@
 CC      = gcc
-CFLAGS  = -Wall -g -D_BSD_SOURCE -std=gnu99 -Werror -pedantic -lwiringPi
+CFLAGS  = -Wall -g -D_BSD_SOURCE -std=gnu99 -Werror -pedantic
+LDLIBS  = -lwiringPi -lwiringPiDev -lpthread -lm
 
 .SUFFIXES: .c .o
 
 .PHONY: clean 
 
-burglarPi: test_buzzer.o
+burglarPi: burglarPi.o
 
 clean:
 	rm -f $(wildcard *.o) 

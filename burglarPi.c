@@ -105,7 +105,6 @@ int getAuthentication(){
    for (int i = 5; i > 0; i--){
       scanf("%s",input);
       if(!strcmp(input,password)){
-         free(password);
          fclose(fptr);
          return 1;
       }
