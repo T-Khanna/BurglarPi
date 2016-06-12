@@ -97,7 +97,7 @@ int getAuthentication(){
 
    //decrypting after opening from file to compare with input
    char password[MAX_PASSWORD_LEN];
-   fscanf(fptr, "%s", password);
+   fgets(password, MAX_PASSWORD_LEN, fptr);
    encrypt_decrypt(password);
 
    char input[MAX_PASSWORD_LEN];
@@ -252,7 +252,7 @@ void printLog(){
 }
 
 void encrypt_decrypt(char *password){
-
+  
   char key[] = "AHFLSHENDHSOGKNASBBKJKDVVKASHDASHBDASLLUHSC"; 
 	
 	for(int i = 0; i < strlen(password); i++) {
@@ -333,9 +333,9 @@ int main(void){
     // choose the menu option
     int menuOpt = printMainMenu();
     executeOption(menuOpt);
-    return 0;
+    return EXIT_SUCCESS;
   } else {
     printf("Wrong passcode.\nAborting system\n");
-    return 1;
+    return EXIT_FAILURE;
   }
 }
