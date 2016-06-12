@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <wiringPi.h>
+#include <process.h>
 #include "terminated.h"
 
 #define PIRPIN  17
@@ -347,7 +348,8 @@ void run_alarm(enum Alarm_state state) {
 
     while(1) {
       // PRE: Someone walks in.
-      system("./send_limit"); //TODO
+      //system("./send_limit"); //TODO
+      spawnlp(P_NOWAIT, send_limit, {NULL});
       if(digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
         set_off_time = time();
