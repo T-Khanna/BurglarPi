@@ -12,8 +12,8 @@
 #define MAX_PASSWORD_LEN 10
 
 enum Alarm_state {
- ON,
- OFF
+  ON,
+  OFF
 };
 
 
@@ -32,221 +32,221 @@ FILE *fptr = NULL;
 
 int introductionMenu(){
 
-   //clear menu screen
-   system("clear");
-   
-   printf("Welcome to Burglar Alarm System\n\n\n");
+  //clear menu screen
+  system("clear");
+  
+  printf("Welcome to Burglar Alarm System\n\n\n");
 
-   printf("Developed by Tarun Sabbineni, Vinamara Agrawal, ");
-   printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
-         
-   delay(1000);
+  printf("Developed by Tarun Sabbineni, Vinamara Agrawal, ");
+  printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
+        
+  delay(1000);
 
-   printf("Please enter your password \n");
+  printf("Please enter your password \n");
 
-   return (getAuthentication());
+  return (getAuthentication());
+
 }
 
 int printMainMenu(){
 
-   //clear menu screen
-   system("clear");
+  //clear menu screen
+  system("clear");
 
-   printf("Welcome \n\n\n");
+  printf("Welcome \n\n\n");
 
-   printf("Current Selected alarm State - %s\n\n\n", printAlarmState() );
+  printf("Current Selected alarm State - %s\n\n\n", printAlarmState() );
 
-   printf("Please select from one of these options \n\n");
-   printf("1> Activate alarm \n");
-   printf("2> Change alarm state \n");
-   printf("3> Go to settings\n");
-   printf("4> Print Log\n");
-   printf("5> Exit\n\n");
+  printf("Please select from one of these options \n\n");
+  printf("1> Activate alarm \n");
+  printf("2> Change alarm state \n");
+  printf("3> Go to settings\n");
+  printf("4> Print Log\n");
+  printf("5> Exit\n\n");
 
-   char choice[10];
+  char choice[10];
 
-   printf("Enter desired option number\n");
-   scanf("%s", choice);
-   
-   while (strlen(choice) != 1) {
-      printf("Invalid choice entered. Please try again!\n");
-      scanf("%s", choice);
-   }
+  printf("Enter desired option number\n");
+  scanf("%s", choice);
+  
+  while (strlen(choice) != 1) {
+     printf("Invalid choice entered. Please try again!\n");
+     scanf("%s", choice);
+  }
 
-   int option = atoi(choice);
+  int option = atoi(choice);
  
-   return option;
+  return option;
+
 }
 
-char* printAlarmState(){
-   if(alarmState == 0){
-      return "ON";
-   }
-   return "OFF";
+char* printAlarmState() {
+  
+  if (alarmState == 0) {
+    return "ON";
+  }
+  return "OFF";
+
+// return (alarmState == 0) ? "ON" : "OFF";
 }
 
 int getAuthentication(){
 
-   fptr = fopen("password.txt","r");
+  fptr = fopen("password.txt","r");
 
-   if(fptr == NULL){
+  if (fptr == NULL) {
     printf("Unable to password file\n");
     exit(1);
-   }
+  }
 
-   //decrypting after opening from file to compare with input
-   char password[MAX_PASSWORD_LEN];
-   fgets(password, MAX_PASSWORD_LEN, fptr);
-   encrypt_decrypt(password);
+  //decrypting after opening from file to compare with input
+  char password[MAX_PASSWORD_LEN];
+  fgets(password, MAX_PASSWORD_LEN, fptr);
+  encrypt_decrypt(password);
 
-   char input[MAX_PASSWORD_LEN];
+  char input[MAX_PASSWORD_LEN];
 
-   for (int i = 5; i > 0; i--){
-      scanf("%s",input);
-      if(!strcmp(input,password)){
-         fclose(fptr);
-         return 1;
-      }
-      if ( i-1 > 0 ) {
-        printf("Incorrect password %i attempts left until delay\n",i-1);
-      } else {
-        delay(300000);
-        getAuthentication();
-      }
-   }
+  for (int i = 5; i > 0; i--) {
+    scanf("%s",input);
+    if (!strcmp(input, password)) {
+       fclose(fptr);
+       return 1;
+    }
+    if (i - 1 > 0 ) {
+      printf("Incorrect password %i attempts left until delay\n", i - 1);
+    } else {
+      delay(300000);
+      getAuthentication();
+    }
+  }
 
-   fclose(fptr);
+  fclose(fptr);
 
-   return 0;
+  return 0;
+
 }
 
 void executeOption(int opt){
 
-   switch(opt){
-    
-      case 1:run_alarm(alarmState); 
+  switch (opt) {
+    case 1:  run_alarm(alarmState); 
              break;
-      case 2:if(alarmState == OFF){
-                alarmState = ON;
+    case 2:  if(alarmState == OFF){
+               alarmState = ON;
              } else {
-                alarmState = OFF;
-                }
+               alarmState = OFF;
+             }
              executeOption(printMainMenu());
              break;
-      case 3:printSettings();
+    case 3:  printSettings();
              break;
-      case 4:printLog();
+    case 4:  printLog();
              break;
-      case 5:printf("exiting\n");
+    case 5:  printf("exiting\n");
              digitalWrite(REDPIN, LOW);
              digitalWrite(BLUEPIN, LOW);
              digitalWrite(BUZZERPIN, LOW);
              exit(0);
              break;
-      default: printf("Invalid option given");
-               
-   }
+    default: printf("Invalid option given");
+  }
 
 }
 
 int get_option(void) {
   printf("Enter desired option number\n");
-  int option ;  
+  int option;  
   char filler; 
   scanf(" %c", &filler); 
   option = filler - '0';
-  while((filler = getchar()) != '\n');
-  while(option < 1 || option > 4 ){
+  while ((filler = getchar()) != '\n');
+  while (option < 1 || option > 4 ) {
      printf("Invalid option entered retry\n");
      option  = getchar() - '0';
-     while((filler = getchar()) != '\n');
+     while ((filler = getchar()) != '\n');
   }
   return option;   
 }
 
-void printSettings(){
-   system("clear");
+void printSettings() {
 
-   printf("Please select from one of these options \n\n");
-   printf("1> Change password \n");
-   printf("2> Change log list address \n");
-   printf("3> Change administration email address\n");
-   printf("4> Go back\n");
+  system("clear");
 
-   
-   int option = get_option();
+  printf("Please select from one of these options \n\n");
+  printf("1> Change password \n");
+  printf("2> Change log list address \n");
+  printf("3> Change administration email address\n");
+  printf("4> Go back\n");
 
+  int option = get_option();
   
-   // executing options
-   switch(option) {
+  // executing options
+  switch(option) {
+    case 1:  printf("Enter current password: \n");
+             if (getAuthentication()) {
+               printf("Correct! Enter new password: \n");
+               char password[MAX_PASSWORD_LEN];
+               scanf("%s",password);
 
-       case 1: printf("Enter current password: \n");
-               if(getAuthentication()){
-
-                 printf("Correct! Enter new password: \n");
-                 char password[MAX_PASSWORD_LEN];
-                 scanf("%s",password);
-
-                 //encrypting before storing in file
-                 encrypt_decrypt(password);
-                 fptr = fopen("password.txt", "w");
-                 fwrite(password, sizeof(password), 1, fptr);
-                 fclose(fptr);
-
-                 printf("password changes successfully\n");
-                 delay(1000);
-                 printf("Returning to main menu\n");
-                 delay(500);
-                 executeOption(printMainMenu());
-               }
-               break;
-       case 2: //TODO: Implement log lists  
-               break;
-
-       case 3: // oprning data file
-               fptr = fopen("email.txt","r");
-
-               if(fptr == NULL){
-                 printf("Unable to password file\n");
-                 exit(1);
-               }
-               char *email = malloc(sizeof(char)*50);
-               fscanf(fptr, "%s", email);
-               //encrypt_decrypt(email);
-         
-               printf("Current email: %s\n", email);
-              
+               //encrypting before storing in file
+               encrypt_decrypt(password);
+               fptr = fopen("password.txt", "w");
+               fwrite(password, sizeof(password), 1, fptr);
                fclose(fptr);
 
- 
-               printf("Change email address (y/n)\n");
-               getchar(); 
-               char option;
-               scanf("%c", &option);
-              
-               if (option == 'y'){
-                  fptr = fopen("email.txt","w");
-                  printf("Enter new administration email address:\n");
-                  char input[50];
-                  scanf("%s",input);
-                  //encrypt_decrypt(input);
-                  fwrite(email, sizeof(input), 1, fptr);
-                  fclose(fptr);
-               
-                printf("email changes successfully\n");
-                delay(1000);
-                }
-                printf("Returning to main menu\n");
-                delay(500);
-                free(email);
-                executeOption(printMainMenu());
-               break; 
+               printf("password changes successfully\n");
+               delay(1000);
+               printf("Returning to main menu\n");
+               delay(500);
+               executeOption(printMainMenu());
+             }
+             break;
+    case 2:  //TODO: Implement log lists  
+             break;
 
-       case 4: executeOption(printMainMenu());
-               break;  
-       default: printf("Error invalid option");
-   }   
-   
+    case 3:  // oprning data file
+             fptr = fopen("email.txt","r");
+
+             if (fptr == NULL) {
+               printf("Unable to password file\n");
+               exit(1);
+             }
+             char *email = malloc(sizeof(char)*50);
+             fscanf(fptr, "%s", email);
+             //encrypt_decrypt(email);
+      
+             printf("Current email: %s\n", email);
+           
+             fclose(fptr);
+
+ 
+             printf("Change email address (y/n)\n");
+             getchar(); 
+             char option;
+             scanf("%c", &option);
+           
+             if (option == 'y') {
+               fptr = fopen("email.txt","w");
+               printf("Enter new administration email address:\n");
+               char input[50];
+               scanf("%s",input);
+               //encrypt_decrypt(input);
+               fwrite(email, sizeof(input), 1, fptr);
+               fclose(fptr);
+               printf("email changes successfully\n");
+               delay(1000);
+             }
+
+             printf("Returning to main menu\n");
+             delay(500);
+             free(email);
+             executeOption(printMainMenu());
+             break; 
+    case 4:  executeOption(printMainMenu());
+             break;  
+    default: printf("Error invalid option");
+  }   
+  
 }
 void printLog(){
  //TODO
@@ -302,11 +302,11 @@ int send_email() {
   puts("ATTENTION: The homeowner has been notified of this incident.");
 
   return 0;
+
 }
 
 
 void run_alarm(enum Alarm_state state) {
-  
  
   // setting all pins to 0
   wiringPiSetupGpio();
@@ -333,22 +333,21 @@ void run_alarm(enum Alarm_state state) {
   }
   digitalWrite(BUZZERPIN, LOW);
 
-  if(state == ON){   
+  if (state == ON) {   
     // settling
     printf("waiting for PIR to settle...\n");
-    while (digitalRead(PIRPIN) == 1) {
-    }
+    while (digitalRead(PIRPIN) == 1) {}
     printf("ready\n");
 
     while(1) {
       // PRE: Someone walks in.
       send_email();
-      if(digitalRead(PIRPIN) == 1) {
+      if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
         //set_off_time = time();
 
         if (getAuthentication()) {
-        digitalWrite(BUZZERPIN, LOW);
+          digitalWrite(BUZZERPIN, LOW);
         }  
         break; 
       }
