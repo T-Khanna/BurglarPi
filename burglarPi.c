@@ -10,6 +10,7 @@
 #define BUZZERPIN  22
 #define TEST_BUZZER_TIME 2000
 #define MAX_PASSWORD_LEN 10
+#define MAX_BUFFER_SIZE 100
 
 enum Alarm_state {
   ON,
@@ -27,6 +28,8 @@ void printLog();
 void encrypt_decrypt();
 int send_email();
 void run_alarm(enum Alarm_state state);
+int get_option(int min, int max);
+
 int alarmState = OFF;
 FILE *fptr = NULL;
 
@@ -64,19 +67,7 @@ int printMainMenu(){
   printf("4> Print Log\n");
   printf("5> Exit\n\n");
 
-  char choice[10];
-
-  printf("Enter desired option number\n");
-  scanf("%s", choice);
-  
-  while (strlen(choice) != 1) {
-     printf("Invalid choice entered. Please try again!\n");
-     scanf("%s", choice);
-  }
-
-  int option = atoi(choice);
- 
-  return option;
+  return get_option(1, 5);
 
 }
 
@@ -153,17 +144,22 @@ void executeOption(int opt){
 
 }
 
-int get_option(void) {
-  printf("Enter desired option number\n");
+int get_option(int min, int max) {
   int option;  
-  char filler; 
-  scanf(" %c", &filler); 
-  option = filler - '0';
-  while ((filler = getchar()) != '\n');
-  while (option < 1 || option > 4 ) {
-     printf("Invalid option entered retry\n");
-     option  = getchar() - '0';
-     while ((filler = getchar()) != '\n');
+  char buffer[MAX_BUFFER_SIZE]; 
+  while (fgets(buffer, MAX_BUFFER_SIZE, stdin)) {
+    if (strlen(buffer) != 2) {
+      if (*buffer != '\n') {
+        printf("Please enter a valid option\n");
+      }
+      continue;
+    }
+    option = atoi(buffer);
+    if (option < min || option > max) {
+      printf("Please enter a number between %d and %d\n", min, max);
+      continue;
+    }
+    break;
   }
   return option;   
 }
@@ -176,9 +172,9 @@ void printSettings() {
   printf("1> Change password \n");
   printf("2> Change log list address \n");
   printf("3> Change administration email address\n");
-  printf("4> Go back\n");
+  printf("4> Go back\n\n");
 
-  int option = get_option();
+  int option = get_option(1, 4);
   
   // executing options
   switch(option) {
