@@ -6,8 +6,8 @@ LDLIBS  = -lwiringPi -lwiringPiDev -lpthread -lm
 
 .PHONY: clean 
 
-burglarPi: burglarPi.o send_limit.o
-
+burglarPi: burglarPi.o
+ 
 clean:
 	rm -f $(wildcard *.o) 
 	rm -f burglarPi
