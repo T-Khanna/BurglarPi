@@ -1,0 +1,83 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+
+\begin{document}
+
+\title{ARM - Assembler and Extension (Group 40)}
+\author{Tarun Sabbineni (L), Vinamra Agrawal, Tanmay Khanna, Balint Babik}
+
+\maketitle
+
+\section{Introduction}
+
+\subsection{Structure and implementation of Assembler}
+% • How you’ve structured and implemented your assembler.
+
+% Two pass explanation
+For the structure of our assembler, we have chosen to do a two pass implementation. We have split the assembler into these main stages: 
+
+1. Get instructions - First we store the instructions directly from the source file into an array of strings. This stage ignores any empty or comment lines in the source code. Crucially however, lines that begin with a label are read and stored in the array. 
+
+2. Store labels - This stage updates the symbol table with all of the labels and their relative positions in the source code. This is needed for the calculation of the branch instructions.
+
+3. Tokenise lines - This stage takes one line at a time and splits it into tokens. We make use of a custom structure we've defined as \textbf{tokenised}, which stores a function pointer and a pointer to the operands for the instruction. During the process of tokeniser, we detect which instruction we are currently dealing with by checking the first token in the line, making use of the function pointer in our tokenised structure. During this process, we also store the operands (the remaining tokens after the first) into our tokenised structure.
+
+4. Process instructions - This is where we convert the instruction from it's source format into binary. We call a function, \textbf{command processor}, which, using the function pointer and operands from the tokenised structure, assigns the instruction to the appropriate function. This returns the binary equivalent for the input instruction.
+
+5. Writing to file - We simply just write the binary instructions obtained from the previous stage into the file.
+
+\subsection{Description of extension}
+% A description of your extension, including an example of its use.
+For our extension, we have decided to build a burglar alarm using our raspberry pi and the C programming language.  Once the alarm is turned on using the appropriate password, the PIR sensor would need a few seconds to settle after the delay which we use to give the homeowner sufficient time to leave the house. Then, if a person is detected by the sensor using infra-red rays, the buzzer will emit sound and will require a password to be entered. The buzzer will continue buzzing until the right password is entered. If the maximum allowed number of attempts is reached, which is five, then the system is locked out and an email is sent whilst the program is exited but the buzzer will stay on. The owner will be able to reset the system by logging into the program again. We use the two coloured LEDs to represent the current state of the alarm. The Red LED shows that the alarm is turned on and is armed whilst the Blue LED shows that the alarm is on and disarmed when lit. We are also planning on notifying the homeowner when such an incident happens using e-mail. Another feature we are working on is the implementation of log files that will give the homeowner more information on the times when the buzzer was activated and deactivated.
+
+\section{Design and Implementation of Extension}
+
+\subsection{Design of extension}
+% • High-level details of the design
+We have ordered a kit that contained all the appropriate components such as the PIR (Passive Infra-Red) sensor, Red and Blue LEDs and a buzzer. We are using a C library called WiringPi in order to process our GPIO (General Purpose Input Output) commands in order to interact with the components that we have.  This library provides us with a delay function that we will use to give the homeowner plenty of time to exit the room or house that the alarm guards after arming the system using a password. After the delay, the PIR sensor will be activated and will settle. Then our program reads the input from the PIR sensor and if it detects a change, it will write the input of the buzzer so that it turns on. Its only when someone enters the correct password using the standard input from the keyboard that the buzzer turns off. Otherwise, it keeps on buzzing as we do not change the buzzer's input. We detect the correct password by reading keyboard input from the command line whilst hashing the input out and there can only be a maximum of five attempts until the system is locked out. The alarm is operated using a user interface on that terminal that also supports other functions such as accessing logs, changing password and other settings which we implemented using simple print statements. We are also planning on adding email functionality using an additional library. This will send the homeowner an email upon the alarm not being turned off within the first 30 seconds of it going off. 
+
+\subsection{Challenges in implementation of extension}
+% a discussion of any challenges/problems that had to be overcome during the extension’s implementation
+We came across our first challenge for the extension when trying to implement the PIR sensor. The process of testing the alarm took us a lot longer than we initially anticipated. This was due to the PIR sensor not settling and then detecting an input but instead, it was stuck in the state of settling where it detected a continuous change in motion although there was none in our test scenario. After attempting to tweak the sensitivity settings on the sensor, replacing the sensor as well as all the other components in our circuit, we eventually narrowed the problem. We detected the problem to be the faulty wires in the setup in conjunction with the sensitivity settings on the sensor which returned readings that were not useful for our program. We had further challenges in the implementation due to hardware issues such as misinterpreting the password locations of the breadboard and processing the Input and Output correctly with our components. Other challenges that we faced were differing opinions on the UI(User Interface) structure of our program and input validation in our UI that we implemented. 
+
+\subsection{Testing the implementation}
+% • A description of how you have tested your implementation, and a discussion of how eﬀective you believe this testing to be.
+Before implementing the complete system, we tested each hardware component individually by writing simple programs using the WiringPi library to ensure that we could continue on our build. It was at this point that we ran into problems with the sensitivity of PIR sensor. After fixing this problem, as mentioned earlier in this section, we were able to build the circuit required that implemented the PIR sensor, LEDs, breadboard and the buzzer and wrote a bare-bones program using C that sets the buzzer off for a few seconds upon a change in input from the PIR sensor. Hence building a bare-bones burglar alarm system. We have tested this implementation in several environments such as in different rooms with different levels of movement before moving on. Although we believe this testing was sufficient to carry on, we did bear in mind that we haven't been able to test in all situations such as when the room would be completely dark due to practical reasons. Then we went onto build the program further to prepare for real world use. After implementing the password system and the basic UI that displays the settings of the system on the terminal, we tested it through using different inputs. For example, we tested our system using a multi-word password which the program interpreted as multiple attempts rather than only one. Also when entering a string instead of a number for selecting the options on the main screen, the program would print the same message (invalid input) in an infinite loop . Therefore we continued to focus on input validation before implementing further features.
+
+\section{Reflection}
+
+\subsection{Group reflection}
+% • A group reﬂection on programming in a group. This should include a discussion on how eﬀective you believe your way of communicating and splitting work between the group was, and things you would do differently or keep the same next time.
+Despite the very little experience some of us had with C, we have been able to adapt very well to the language and pick it up fairly quickly. Due to this, our initial progress was slow. To work around this, we should have had more regular timings with our meetings. In general, our communication has been clear and efficient whilst the structure that we have laid out for our programs has been intuitive and easy to understand. Although our structure for the emulator was initially not as clear. One thing we could improve upon is to have allocated more time for the setting up of the structure for our emulator program, as it ended up taking much longer than we had initially anticipated. However, we have learned and accounted for this during the assembler part of the project. By working on the same git repository with almost 400 commits from the first day of the project , we have become more confident in the features of git for working in groups such as branches. We are now also more confident than ever at resolving merge conflicts to have an efficient work-flow throughout the project. We have been able to work in conjunction with each other throughout the project in order to achieve the task at hand and our WebPA feedback only helped improve that to have the optimal atmosphere when working on this project. Learning from each other with our strengths and weaknesses helped us pick up the language at a faster rate especially within the first week amongst other skills. We have all become more efficient at splitting up larger pieces of work as the project progressed and have improved on setting our own deadlines in order to ensure that we stay on track throughout the project. We believe that we will be able to be more comfortable and efficient in splitting up the work in future group projects than we were during the beginning of this one.
+
+\subsection{Individual reflections}
+% • Individual reﬂections (at least one paragraph per group member). Using both sets of WebPA feedback, and other experiences, reﬂect on how you feel you ﬁtted into the group. For example, what your strengths and weaknesses turned out to be compared to what you thought they might be or things you would do diﬀerently or maintain when working with a diﬀerent group of people.
+
+\subsubsection{Tarun Sabbineni}
+As this project was a much larger scale than any other we have done before, I have learnt that planning and organisation was key to this project. Especially as the group leader, it was very important to setup group meetings and make sure that the communication and motivation within the group was the best it could be. Although the general feedback from WebPA that I received was positive, I have learnt from the others that they really valued the communication and planning of mine. Therefore, I tried to further improve on my communication and planning in order to make it my strength. Having no knowledge of C before this project meant that I couldn't contribute to the code as efficiently initially compared to others that had slightly more experience. Therefore, coding with another group member was much more efficient initially in the project than independently as we could correct each other on simple mistakes. However, within a few days, my confidence in programming in C increased and I was able to contribute a lot more than initially and could code independently effectively. As the leader, I have learnt how to efficiently split up the work throughout the process which is a skill that I can now reapply in any further group projects. To conclude, I think that I have fit in well with the team in order to work cohesively throughout this project. 
+
+\subsubsection{Vinamra Agrawal}
+This project was a really enjoyable learning experience. I gained more experience in C and assembly whilst at the time was able to experiment with I/O functions whilst being able to work with colleagues. I learned how to respect others' decisions, work in a group efficiently and the importance of keeping everyone updated and involved. The feedback from WebPA, helped me appreciate my  strength for working tirelessly, debugging and taking charge for things, and tackle my weaknesses by being even more polite with my opinions. Not only have I learned C from the group of amazing people I worked with but I also learned skills such as going out of the way to help others and to work in sync people's time schedule.  Overall, I think it was a great experience and I feel much more confident for working in groups after this project.
+
+
+\subsubsection{Tanmay Khanna}
+Throughout the duration of the project, my knowledge and confidence in C has improved immensely. I have gained valuable experience in learning how to split the work amongst the group in order to complete the set deadlines with the utmost efficiency. I have also gained more experience in using git as part of a group, which involved working on separate branches. My communication skills in the group have been very good, as the feedback I have received has shown me. Overall, this has been a very good experience and the group environment has been very good.
+
+\subsubsection{Balint Babik}
+This project has been a big undertaking for all of us but I am personally really glad that the course was designed this way. I had a bit of experience with C from before but I learned much more through interacting with other team members than other conventional methods. I feel like our team had really good cohesion between the members which lead to a great atmosphere for learning  and  working together. 
+I think the project has caused me to improve in a lot of different areas but it has also highlighted some of my weaknesses I've been trying to improve upon. My ability to keep the deadlines set for me has been a historical weakness and I feel it has negatively impacted the project in a very direct manner as well as causing everything dependent on my part as well as my working pace to suffer. This problem has been known to me for a long time and I've been trying to improve on it but I'm disappointed that it still somewhat affected this project.
+Other than the aforementioned problem, I am happy with my contribution to the project. All in all, I feel that it has been a great success as I have learned valuable lessons in both cooperative and technical skills from my teammates during the course of it. 
+
+\section{Resources}
+\begin{itemize}
+\item WiringPi (http://wiringpi.com) - We have used this library in order to interact with our component using programs written in C using its GPIO commands.
+\item CamJam EduKit (http://camjam.me) - We have used the components provided by this package to implement our burglar alarm as it contained all the sensors and supporting material required to assist us.
+\item Raspberry Pi (http://raspberrypi.org) - We have used this mini-computer to implement our extension.
+\end{itemize}
+
+\end{document}
+
+
+
+
