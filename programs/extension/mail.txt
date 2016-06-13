@@ -1,10 +1,10 @@
 From: "BurglarPi" <BurglarPi@gmail.com>
 To: "Homeowner"
-Subject: ATTENTION: Burglar Detected
+Subject: ATTENTION: Movement Detected
 
 Dear Homeowner,
 
-Your BurglarPi has detected movement in your home. Please take action appropriately.
+Your BurglarPi has detected movement in your home. Please take action appropriately if this was not triggered due to yourself. 
 
 Thank you,
 BurglarPi Team
