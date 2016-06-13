@@ -267,7 +267,7 @@ void encrypt_decrypt(char *password){
 int send_email() {
 
   //obtaining email stored in file
-  email = malloc(sizeof(char)*50);
+  char* email = malloc(sizeof(char)*50);
   fscanf(fptr, "%s", email);
   fclose(fptr);
 
@@ -291,13 +291,13 @@ int send_email() {
   system(cmd);
 
   //working code to help debug
-  //system("curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
-  //             --mail-from \"burglarpi@gmail.com\" \
-  //             --mail-rcpt \"tsabbineni@gmail.com\" \
-  //             --upload-file mail.txt \
-  //             --user \"burglarpi@gmail.com:imperial15\" --insecure \
-  //             &>/dev/null &");
-
+  /*system("curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
+                 --mail-from \"burglarpi@gmail.com\" \
+                 --mail-rcpt \"tsabbineni@gmail.com\" \
+                 --upload-file mail.txt \
+                 --user \"burglarpi@gmail.com:imperial15\" --insecure \
+                 &>/dev/null &");
+  */
   free(email);
   puts("ATTENTION: The homeowner has been notified of this incident.");
 
@@ -345,7 +345,7 @@ void run_alarm(enum Alarm_state state) {
       send_email();
       if(digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
-        set_off_time = time();
+        //set_off_time = time();
 
         if (getAuthentication()) {
         digitalWrite(BUZZERPIN, LOW);
