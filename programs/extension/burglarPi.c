@@ -108,10 +108,10 @@ int getAuthentication(){
          return 1;
       }
       if ( i-1 > 0 ) {
-       printf("Incorrect password %i attempts left\n",i-1);
+        printf("Incorrect password %i attempts left until delay\n",i-1);
       } else {
-      printf("You have been visited by the lockout meme.\nUpboat this 5 times on leddit or the unlocking skeltal will never come to you.\n");
-      run_alarm(OFF);
+        delay(300000);
+        getAuthentication();
       }
    }
 
