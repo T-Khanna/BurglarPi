@@ -3,8 +3,6 @@
 #include <string.h>
 #include <time.h>
 #include <wiringPi.h>
-#include <process.h>
-#include "terminated.h"
 
 #define PIRPIN  17
 #define REDPIN  18
@@ -12,7 +10,6 @@
 #define BUZZERPIN  22
 #define TEST_BUZZER_TIME 2000
 #define MAX_PASSWORD_LEN 10
-#define KEY 0xFACA
 
 enum Alarm_state {
  ON,
@@ -32,7 +29,6 @@ int send_email();
 void run_alarm(enum Alarm_state state);
 int alarmState = OFF;
 FILE *fptr = NULL;
-extern int terminated;
 
 int introductionMenu(){
 
@@ -115,7 +111,6 @@ int getAuthentication(){
        printf("Incorrect password %i attempts left\n",i-1);
       } else {
       printf("You have been visited by the lockout meme.\nUpboat this 5 times on leddit or the unlocking skeltal will never come to you.\n");
-      send_email();
       run_alarm(OFF);
       }
    }
@@ -346,15 +341,13 @@ void run_alarm(enum Alarm_state state) {
 
     while(1) {
       // PRE: Someone walks in.
-      //system("./send_limit");
-      spawnlp(P_NOWAIT, send_limit, {NULL});
+      send_email();
       if(digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
         set_off_time = time();
 
         if (getAuthentication()) {
         digitalWrite(BUZZERPIN, LOW);
-        terminated = 1;
         }  
         break; 
       }
