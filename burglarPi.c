@@ -210,7 +210,7 @@ void printSettings(){
                  printf("Unable to password file\n");
                  exit(1);
                }
-               email = malloc(sizeof(char)*50);
+               char *email = malloc(sizeof(char)*50);
                fscanf(fptr, "%s", email);
                //encrypt_decrypt(email);
          
@@ -298,6 +298,7 @@ int send_email() {
   //             --user \"burglarpi@gmail.com:imperial15\" --insecure \
   //             &>/dev/null &");
 
+  free(email);
   puts("ATTENTION: The homeowner has been notified of this incident.");
 
   return 0;
