@@ -340,7 +340,6 @@ void run_alarm(enum Alarm_state state) {
       send_email();
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
-        //set_off_time = time();
 
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
