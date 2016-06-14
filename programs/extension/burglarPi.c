@@ -95,10 +95,10 @@ int getAuthentication(){
   fgets(password, MAX_PASSWORD_LEN, fptr);
   encrypt_decrypt(password);
 
-  char input[MAX_PASSWORD_LEN];
+  char input[MAX_BUFFER_SIZE];
 
   for (int i = 5; i > 0; i--) {
-    scanf("%s",input);
+    fgets(input, MAX_BUFFER_SIZE, stdin);
     if (!strcmp(input, password)) {
        fclose(fptr);
        return 1;
