@@ -99,6 +99,8 @@ int getAuthentication(){
 
   for (int i = 5; i > 0; i--) {
     fgets(input, MAX_BUFFER_SIZE, stdin);
+    // Needed to remove newline character before comparing with stored password
+    input[strcspn(input, "\n")] = '\0';
     if (!strcmp(input, password)) {
        fclose(fptr);
        return 1;
@@ -249,7 +251,7 @@ void printLog(){
 }
 
 void encrypt_decrypt(char *password){
-  
+ 
   char key[] = "AHFLSHENDHSOGKNASBBKJKDVVKASHDASHBDASLLUHSC"; 
 	
 	for(int i = 0; i < strlen(password); i++) {
