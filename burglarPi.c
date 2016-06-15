@@ -8,8 +8,8 @@
 #define REDPIN  18
 #define BLUEPIN 24
 #define BUZZERPIN  22
-#define TEST_BUZZER_TIME 2000
-#define MAX_PASSWORD_LEN 10
+#define BUZZER_TIME 5000
+#define MAX_PASSWORD_LEN 20
 #define MAX_BUFFER_SIZE 100
 
 enum Alarm_state {
@@ -31,15 +31,14 @@ int getAuthentication();
 char* printAlarmState();
 void executeOption(int opt);
 void printSettings();
-void printLog();
+int printLog();
 void encrypt_decrypt();
 int send_email();
 void run_alarm(enum Alarm_state state);
 int get_option(int min, int max);
-int updateLog(enum Log_state);
+int updateLog(enum Log_type);
 
 int alarmState = OFF;
-FILE *fptr = NULL;
 
 int introductionMenu(){
 
@@ -49,10 +48,9 @@ int introductionMenu(){
   printf("Welcome to Burglar Alarm System\n\n\n");
 
   printf("Developed by Tarun Sabbineni, Vinamra Agrawal, ");
-  printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
-        
+  printf("Tanmay Khanna, Balint Babik\n\n\n\n");  
+  
   delay(1000);
-
 
   updateLog(BOOTED);
 
@@ -91,11 +89,12 @@ char* printAlarmState() {
 }
 
 int getAuthentication(){
+  FILE *fptr = NULL;
 
   fptr = fopen("password.txt","r");
 
   if (fptr == NULL) {
-    printf("Unable to password file\n");
+    printf("Unable to pasword file\n");
     exit(1);
   }
 
@@ -103,27 +102,30 @@ int getAuthentication(){
   char password[MAX_PASSWORD_LEN];
   fgets(password, MAX_PASSWORD_LEN, fptr);
   encrypt_decrypt(password);
-
+  password[strcspn(password, "\n")] = '\0';
+  
   char input[MAX_BUFFER_SIZE];
-  printf("Please enter your password\n");
-
-  for (int i = 5; i > 0; i--) {
-    fgets(input, MAX_BUFFER_SIZE, stdin);
-    // Needed to remove newline character before comparing with stored password
-    input[strcspn(input, "\n")] = '\0';
-    if (!strcmp(input, password)) {
-       fclose(fptr);
-       return 1;
+  while (1) {  
+    printf("Please enter your password\n");
+    for (int i = 5; i > 0; i--) {
+      system("stty -echo");
+      fgets(input, MAX_BUFFER_SIZE, stdin);
+      system("stty echo");
+      //Needed to remove newline character before comparing with stored password
+      input[strcspn(input, "\n")] = '\0';
+      if (!strcmp(input, password)) {
+         fclose(fptr);
+         return 1;
+      }
+      if (i - 1 > 0 ) {
+        printf("Incorrect password %i attempts left until delay\n", i - 1);
+      }
     }
-    if (i - 1 > 0 ) {
-      printf("Incorrect password %i attempts left until delay\n", i - 1);
-    } else {
-      delay(300000);
-      updateLog(WRONG_PASSWORD);
-      getAuthentication();
-    }
+    updateLog(WRONG_PASSWORD);
+    puts("Five incorrect password attempts. Please try again after 5 minutes.\n");
+    delay(BUZZER_TIME);
   }
-
+  
   fclose(fptr);
 
   return 0;
@@ -140,13 +142,12 @@ void executeOption(int opt){
              } else {
                alarmState = OFF;
              }
-             executeOption(printMainMenu());
              break;
     case 3:  printSettings();
              break;
     case 4:  printLog();
              break;
-    case 5:  printf("exiting\n");
+    case 5:  printf("Exiting\n");
              digitalWrite(REDPIN, LOW);
              digitalWrite(BLUEPIN, LOW);
              digitalWrite(BUZZERPIN, LOW);
@@ -178,6 +179,7 @@ int get_option(int min, int max) {
 }
 
 void printSettings() {
+  FILE *fptr = NULL;
 
   system("clear");
 
@@ -191,7 +193,8 @@ void printSettings() {
   
   // executing options
   switch(option) {
-    case 1:  if (getAuthentication()) {
+    case 1: system("clear");  
+            if (getAuthentication()) {
                printf("Correct! Enter new password: \n");
                char password[MAX_PASSWORD_LEN];
                scanf("%s",password);
@@ -206,47 +209,44 @@ void printSettings() {
                delay(1000);
                printf("Returning to main menu\n");
                delay(500);
-               executeOption(printMainMenu());
              }
              break;
     case 2:  // opening data file
              fptr = fopen("log_place.txt","r");
 
              if (fptr == NULL) {
-               printf("Unable to password file\n");
+               printf("Unable to open logpath file\n");
                exit(1);
              }
              char *logplace = malloc(sizeof(char)*50);
-             fscanf(fptr, "%s", email);
+             fscanf(fptr, "%s", logplace);
         
         //encrypt_decrypt(email);
       
-             printf("Current logstate: %s\n", email);
+             printf("Current logstate: %s\n", logplace);
            
              fclose(fptr);
 
  
              printf("Change logpath address (y/n)\n");
-             getchar(); 
-             char option;
-             scanf("%c", &option);
+             char choice;
+             scanf("%c", &choice);
            
-             if (option == 'y') {
-               fptr = fopen("email.txt","w");
+             if (choice == 'y') {
+               fptr = fopen("log_place.txt","w+");
                printf("Enter new logfile path address:\n");
                char input[50];
                scanf("%s",input);
                //encrypt_decrypt(input);
-               fwrite(email, sizeof(input), 1, fptr);
+               fwrite(input, sizeof(input), 1, fptr);
                fclose(fptr);
-               printf("logpath changed successfully\n");
+               printf("Logpath changed successfully\n");
                delay(1000);
              }
 
              printf("Returning to main menu\n");
              delay(500);
-             free(email);
-             executeOption(printMainMenu());
+             free(logplace);
              
              break;
 
@@ -267,28 +267,25 @@ void printSettings() {
 
  
              printf("Change email address (y/n)\n");
-             getchar(); 
+             //getchar(); 
              char option;
              scanf("%c", &option);
-           
              if (option == 'y') {
-               fptr = fopen("email.txt","w");
+               fptr = fopen("email.txt","w+");
                printf("Enter new administration email address:\n");
                char input[50];
                scanf("%s",input);
-               //encrypt_decrypt(input);
-               fwrite(email, sizeof(input), 1, fptr);
+               fwrite(input, sizeof(input), 1, fptr);
                fclose(fptr);
-               printf("email changes successfully\n");
+               printf("E-mail changed successfully\n");
                delay(1000);
              }
 
              printf("Returning to main menu\n");
              delay(500);
              free(email);
-             executeOption(printMainMenu());
              break; 
-    case 4:  executeOption(printMainMenu());
+    case 4:  
              break;  
     default: printf("Error invalid option");
   }   
@@ -296,42 +293,53 @@ void printSettings() {
 }
 
 int printLog(){
+
+
+  
+  FILE *fptr = NULL;
  
-  char* logplace = malloc(sizeof(char)*50);
+  system("clear");
+    
+  fptr = fopen("log_place.txt", "r");
+  char logplace[50];
   fscanf(fptr, "%s", logplace);
   fclose(fptr);
+
+
 
   fptr = fopen(logplace,"r");
 
   if (fptr == NULL) {
     printf("Unable to open logfile\n");
-    free(logplace);
-    exit(1);
+    return 1;
   }
 
-  char c = '0';
-  while((c = fgetc(fptr)) == EOF) {
-    printf()
+  int c;
+  while((c = fgetc(fptr)) != EOF) {
+    putchar(c);
   }
   
   fclose(fptr);
-  free(logplace);
+  printf("\nPress any key to continue.");
+  getchar();
   return 0;
 
 }
 
-int updateLog(enum Log_state state){
- 
-  char* logplace = malloc(sizeof(char)*50);
+int updateLog(enum Log_type state){
+  FILE *fptr = NULL;
+  
+  fptr = fopen("log_place.txt", "r");
+  char logplace[50]; 
   fscanf(fptr, "%s", logplace);
   fclose(fptr);
+
 
   fptr = fopen(logplace,"a");
 
   if (fptr == NULL) {
     printf("Unable to open logfile\n");
-    free(logplace);
-    exit(1);
+    return 1;
   }
   
 
@@ -341,32 +349,35 @@ int updateLog(enum Log_state state){
 
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  fputs(fptr, "[%s]: ", asctime(timeinfo));
+  char* str_time = asctime(timeinfo);
+  *(str_time + strlen(str_time) - 1) = '\0'; 
+  fprintf(fptr, "[%s]: ", str_time);
 
 
   if (state == BOOTED) {
-    fprintf("System was booted.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was booted.\n");
   } else if (state == LOCKED) {
     if(alarmState == ON) {
-    fprintf("System was locked in armed state.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was locked in armed state.\n");
     } else {
-    fprintf("System was locked in unarmed state.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was locked in unarmed state.\n");
     }
   } else if (state == TRIGGERED) {
-    fprintf("System was triggered.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was triggered.\n");
   } else if (state == WRONG_PASSWORD) {
-    fprintf("Wrong password was input.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "Wrong password was input.\n");
   } else if (state == UNLOCKED) {  
    if(alarmState == ON) {
-      fprintf("System was unlocked from armed state.\n---------------------------------------------------------------------------------\n");
+      fprintf(fptr, "System was unlocked from armed state.\n");
       } else {
-      fprintf("System was unlocked from unarmed state.\n---------------------------------------------------------------------------------\n");
+      fprintf(fptr, "System was unlocked from unarmed state.\n");
       } 
   }
   
+  fprintf(fptr, "--------------------------------------------------------------------------------\n");
+  
 
   fclose(fptr);
-  free(logplace);
   return 0;
 }
 
@@ -385,17 +396,18 @@ void encrypt_decrypt(char *password){
 }
 
 int send_email() {
+  FILE *fptr = NULL;
 
   //obtaining email stored in file
+  fptr = fopen("email.txt", "r");
   char* email = malloc(sizeof(char)*50);
   fscanf(fptr, "%s", email);
   fclose(fptr);
 
-
   //constructing appropriate command to send email
   char cmd[500];
 
-  strcat(cmd, "curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
+  strcat(cmd, "curl -s --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
                --mail-from \"burglarpi@gmail.com\" \
                --mail-rcpt \"");
 
@@ -404,7 +416,7 @@ int send_email() {
   strcat(cmd, "\" \
                --upload-file mail.txt \
                --user \"burglarpi@gmail.com:imperial15\" --insecure \
-               &>/dev/null &");
+               &> /dev/null 2>&1");
 
 
   //calling appropriate command to send email
@@ -429,9 +441,6 @@ int send_email() {
 void run_alarm(enum Alarm_state state) {
  
   updateLog(LOCKED);
-
-  // setting all pins to 0
-  wiringPiSetupGpio();
 
   // setting up output pins
   pinMode(REDPIN, OUTPUT);
@@ -465,12 +474,12 @@ void run_alarm(enum Alarm_state state) {
 
     while(1) {
       // PRE: Someone walks in.
-      send_email();
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
 
         printf("To deactivate the alarm:\n");
         updateLog(TRIGGERED);
+        send_email();
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
         }  
@@ -500,12 +509,18 @@ int main(void){
   // settigns (change password, log list ,email)
   // print loglist
   // Exit
+
+  // setting all pins to 0
+  wiringPiSetupGpio();
+
+
  
   // print introduction and check for inital authentication
   if (introductionMenu()){
-    // choose the menu option
-    int menuOpt = printMainMenu();
-    executeOption(menuOpt);
+    while(1){
+      // choose the menu option
+      executeOption(printMainMenu());
+    }
     return EXIT_SUCCESS;
   } else {
     printf("Wrong passcode.\nAborting system\n");
