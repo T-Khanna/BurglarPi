@@ -9,7 +9,7 @@
 #define BLUEPIN 24
 #define BUZZERPIN  22
 #define BUZZER_TIME 5000
-#define MAX_PASSWORD_LEN 10
+#define MAX_PASSWORD_LEN 20
 #define MAX_BUFFER_SIZE 100
 
 enum Alarm_state {
@@ -103,7 +103,9 @@ int getAuthentication(){
   fgets(password, MAX_PASSWORD_LEN, fptr);
   encrypt_decrypt(password);
   password[strcspn(password, "\n")] = '\0';
-  
+ 
+  printf("%s\n",password);
+ 
   char input[MAX_BUFFER_SIZE];
   while (1) {  
     printf("Please enter your password\n");
@@ -142,7 +144,6 @@ void executeOption(int opt){
              } else {
                alarmState = OFF;
              }
-             executeOption(printMainMenu());
              break;
     case 3:  printSettings();
              break;
@@ -194,7 +195,8 @@ void printSettings() {
   
   // executing options
   switch(option) {
-    case 1:  if (getAuthentication()) {
+    case 1: system("clear");  
+            if (getAuthentication()) {
                printf("Correct! Enter new password: \n");
                char password[MAX_PASSWORD_LEN];
                scanf("%s",password);
@@ -209,7 +211,6 @@ void printSettings() {
                delay(1000);
                printf("Returning to main menu\n");
                delay(500);
-               executeOption(printMainMenu());
              }
              break;
     case 2:  // opening data file
@@ -249,7 +250,6 @@ void printSettings() {
              printf("Returning to main menu\n");
              delay(500);
              free(logplace);
-             executeOption(printMainMenu());
              
              break;
 
@@ -289,9 +289,8 @@ void printSettings() {
              printf("Returning to main menu\n");
              delay(500);
              free(email);
-             executeOption(printMainMenu());
              break; 
-    case 4:  executeOption(printMainMenu());
+    case 4:  
              break;  
     default: printf("Error invalid option");
   }   
@@ -299,27 +298,35 @@ void printSettings() {
 }
 
 int printLog(){
+
+
+  
   FILE *fptr = NULL;
  
-  char* logplace = malloc(sizeof(char)*50);
+  system("clear");
+    
+  fptr = fopen("log_place.txt", "r");
+  char logplace[50];
   fscanf(fptr, "%s", logplace);
   fclose(fptr);
+
+
 
   fptr = fopen(logplace,"r");
 
   if (fptr == NULL) {
     printf("Unable to open logfile\n");
-    free(logplace);
-    exit(1);
+    return 1;
   }
 
-  char c = '0';
+  int c;
   while((c = fgetc(fptr)) != EOF) {
-    printf("%c",c);
+    putchar(c);
   }
   
   fclose(fptr);
-  free(logplace);
+  printf("\nPress any key to continue.");
+  getchar();
   return 0;
 
 }
@@ -337,7 +344,7 @@ int updateLog(enum Log_type state){
 
   if (fptr == NULL) {
     printf("Unable to open logfile\n");
-    exit(1);
+    return 1;
   }
   
 
@@ -402,7 +409,6 @@ int send_email() {
   fscanf(fptr, "%s", email);
   fclose(fptr);
 
-
   //constructing appropriate command to send email
   char cmd[500];
 
@@ -415,7 +421,7 @@ int send_email() {
   strcat(cmd, "\" \
                --upload-file mail.txt \
                --user \"burglarpi@gmail.com:imperial15\" --insecure \
-               &>/dev/null &");
+               &> /dev/null 2>&1");
 
 
   //calling appropriate command to send email
@@ -440,9 +446,6 @@ int send_email() {
 void run_alarm(enum Alarm_state state) {
  
   updateLog(LOCKED);
-
-  // setting all pins to 0
-  wiringPiSetupGpio();
 
   // setting up output pins
   pinMode(REDPIN, OUTPUT);
@@ -476,12 +479,12 @@ void run_alarm(enum Alarm_state state) {
 
     while(1) {
       // PRE: Someone walks in.
-      send_email();
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
 
         printf("To deactivate the alarm:\n");
         updateLog(TRIGGERED);
+        send_email();
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
         }  
@@ -511,12 +514,18 @@ int main(void){
   // settigns (change password, log list ,email)
   // print loglist
   // Exit
+
+  // setting all pins to 0
+  wiringPiSetupGpio();
+
+
  
   // print introduction and check for inital authentication
   if (introductionMenu()){
-    // choose the menu option
-    int menuOpt = printMainMenu();
-    executeOption(menuOpt);
+    while(1){
+      // choose the menu option
+      executeOption(printMainMenu());
+    }
     return EXIT_SUCCESS;
   } else {
     printf("Wrong passcode.\nAborting system\n");
