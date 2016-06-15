@@ -210,7 +210,7 @@ void printSettings() {
                executeOption(printMainMenu());
              }
              break;
-    case 2:  // oprning data file
+    case 2:  // opening data file
              fptr = fopen("log_place.txt","r");
 
              if (fptr == NULL) {
@@ -222,25 +222,25 @@ void printSettings() {
         
         //encrypt_decrypt(email);
       
-             printf("Current email: %s\n", email);
+             printf("Current logstate: %s\n", email);
            
              fclose(fptr);
 
  
-             printf("Change email address (y/n)\n");
+             printf("Change logpath address (y/n)\n");
              getchar(); 
              char option;
              scanf("%c", &option);
            
              if (option == 'y') {
                fptr = fopen("email.txt","w");
-               printf("Enter new administration email address:\n");
+               printf("Enter new logfile path address:\n");
                char input[50];
                scanf("%s",input);
                //encrypt_decrypt(input);
                fwrite(email, sizeof(input), 1, fptr);
                fclose(fptr);
-               printf("email changes successfully\n");
+               printf("logpath changed successfully\n");
                delay(1000);
              }
 
@@ -255,7 +255,7 @@ void printSettings() {
              fptr = fopen("email.txt","r");
 
              if (fptr == NULL) {
-               printf("Unable to password file\n");
+               printf("Unable to open email file\n");
                exit(1);
              }
              char *email = malloc(sizeof(char)*50);
