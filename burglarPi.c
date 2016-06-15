@@ -103,9 +103,7 @@ int getAuthentication(){
   fgets(password, MAX_PASSWORD_LEN, fptr);
   encrypt_decrypt(password);
   password[strcspn(password, "\n")] = '\0';
- 
-  printf("%s\n",password);
- 
+  
   char input[MAX_BUFFER_SIZE];
   while (1) {  
     printf("Please enter your password\n");
@@ -412,7 +410,7 @@ int send_email() {
   //constructing appropriate command to send email
   char cmd[500];
 
-  strcat(cmd, "curl --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
+  strcat(cmd, "curl -s --url \"smtps://smtp.gmail.com:465\" --ssl-reqd \
                --mail-from \"burglarpi@gmail.com\" \
                --mail-rcpt \"");
 
