@@ -40,7 +40,7 @@ int introductionMenu(){
   
   printf("Welcome to Burglar Alarm System\n\n\n");
 
-  printf("Developed by Tarun Sabbineni, Vinamara Agrawal, ");
+  printf("Developed by Tarun Sabbineni, Vinamra Agrawal, ");
   printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
         
   delay(1000);
