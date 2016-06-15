@@ -94,7 +94,7 @@ int getAuthentication(){
   fptr = fopen("password.txt","r");
 
   if (fptr == NULL) {
-    printf("Unable to password file\n");
+    printf("Unable to pasword file\n");
     exit(1);
   }
 
@@ -212,7 +212,7 @@ void printSettings() {
              fptr = fopen("log_place.txt","r");
 
              if (fptr == NULL) {
-               printf("Unable to password file\n");
+               printf("Unable to open logpath file\n");
                exit(1);
              }
              char *logplace = malloc(sizeof(char)*50);
