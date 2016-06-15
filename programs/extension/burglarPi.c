@@ -39,7 +39,6 @@ int get_option(int min, int max);
 int updateLog(enum Log_type);
 
 int alarmState = OFF;
-FILE *fptr = NULL;
 
 int introductionMenu(){
 
@@ -90,6 +89,7 @@ char* printAlarmState() {
 }
 
 int getAuthentication(){
+  FILE *fptr = NULL;
 
   fptr = fopen("password.txt","r");
 
@@ -102,27 +102,30 @@ int getAuthentication(){
   char password[MAX_PASSWORD_LEN];
   fgets(password, MAX_PASSWORD_LEN, fptr);
   encrypt_decrypt(password);
-
+  password[strcspn(password, "\n")] = '\0';
+  
   char input[MAX_BUFFER_SIZE];
-  printf("Please enter your password\n");
-
-  for (int i = 5; i > 0; i--) {
-    fgets(input, MAX_BUFFER_SIZE, stdin);
-    // Needed to remove newline character before comparing with stored password
-    input[strcspn(input, "\n")] = '\0';
-    if (!strcmp(input, password)) {
-       fclose(fptr);
-       return 1;
+  while (1) {  
+    printf("Please enter your password\n");
+    for (int i = 5; i > 0; i--) {
+      system("stty -echo");
+      fgets(input, MAX_BUFFER_SIZE, stdin);
+      system("stty echo");
+      //Needed to remove newline character before comparing with stored password
+      input[strcspn(input, "\n")] = '\0';
+      if (!strcmp(input, password)) {
+         fclose(fptr);
+         return 1;
+      }
+      if (i - 1 > 0 ) {
+        printf("Incorrect password %i attempts left until delay\n", i - 1);
+      }
     }
-    if (i - 1 > 0 ) {
-      printf("Incorrect password %i attempts left until delay\n", i - 1);
-    } else {
-      delay(BUZZER_TIME);
-      updateLog(WRONG_PASSWORD);
-      getAuthentication();
-    }
+    updateLog(WRONG_PASSWORD);
+    puts("Five incorrect password attempts. Please try again after 5 minutes.\n");
+    delay(BUZZER_TIME);
   }
-
+  
   fclose(fptr);
 
   return 0;
@@ -177,6 +180,7 @@ int get_option(int min, int max) {
 }
 
 void printSettings() {
+  FILE *fptr = NULL;
 
   system("clear");
 
@@ -295,6 +299,7 @@ void printSettings() {
 }
 
 int printLog(){
+  FILE *fptr = NULL;
  
   char* logplace = malloc(sizeof(char)*50);
   fscanf(fptr, "%s", logplace);
@@ -320,6 +325,7 @@ int printLog(){
 }
 
 int updateLog(enum Log_type state){
+  FILE *fptr = NULL;
   
   fptr = fopen("log_place.txt", "r");
   char logplace[50]; 
@@ -341,28 +347,32 @@ int updateLog(enum Log_type state){
 
   time(&rawtime);
   timeinfo = localtime(&rawtime);
-  fprintf(fptr, "[%s]: ", asctime(timeinfo));
+  char* str_time = asctime(timeinfo);
+  *(str_time + strlen(str_time) - 1) = '\0'; 
+  fprintf(fptr, "[%s]: ", str_time);
 
 
   if (state == BOOTED) {
-    fprintf(fptr, "System was booted.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was booted.\n");
   } else if (state == LOCKED) {
     if(alarmState == ON) {
-    fprintf(fptr, "System was locked in armed state.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was locked in armed state.\n");
     } else {
-    fprintf(fptr, "System was locked in unarmed state.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was locked in unarmed state.\n");
     }
   } else if (state == TRIGGERED) {
-    fprintf(fptr, "System was triggered.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "System was triggered.\n");
   } else if (state == WRONG_PASSWORD) {
-    fprintf(fptr, "Wrong password was input.\n---------------------------------------------------------------------------------\n");
+    fprintf(fptr, "Wrong password was input.\n");
   } else if (state == UNLOCKED) {  
    if(alarmState == ON) {
-      fprintf(fptr, "System was unlocked from armed state.\n---------------------------------------------------------------------------------\n");
+      fprintf(fptr, "System was unlocked from armed state.\n");
       } else {
-      fprintf(fptr, "System was unlocked from unarmed state.\n---------------------------------------------------------------------------------\n");
+      fprintf(fptr, "System was unlocked from unarmed state.\n");
       } 
   }
+  
+  fprintf(fptr, "--------------------------------------------------------------------------------\n");
   
 
   fclose(fptr);
@@ -384,6 +394,7 @@ void encrypt_decrypt(char *password){
 }
 
 int send_email() {
+  FILE *fptr = NULL;
 
   //obtaining email stored in file
   fptr = fopen("email.txt", "r");
