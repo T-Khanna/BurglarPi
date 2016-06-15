@@ -17,6 +17,13 @@ enum Alarm_state {
   OFF
 };
 
+enum Log_type {
+ BOOTED,
+ LOCKED,
+ TRIGGERED,
+ WRONG_PASSWORD,
+ UNLOCKED
+};
 
 int introductionMenu();
 int printMainMenu();
@@ -29,6 +36,7 @@ void encrypt_decrypt();
 int send_email();
 void run_alarm(enum Alarm_state state);
 int get_option(int min, int max);
+int updateLog(enum Log_state);
 
 int alarmState = OFF;
 FILE *fptr = NULL;
@@ -46,6 +54,8 @@ int introductionMenu(){
   delay(1000);
 
   printf("Please enter your password \n");
+
+  updateLog(BOOTED);
 
   return (getAuthentication());
 
@@ -109,6 +119,7 @@ int getAuthentication(){
       printf("Incorrect password %i attempts left until delay\n", i - 1);
     } else {
       delay(300000);
+      updateLog(WRONG_PASSWORD);
       getAuthentication();
     }
   }
@@ -211,7 +222,11 @@ void printSettings() {
              }
              char *email = malloc(sizeof(char)*50);
              fscanf(fptr, "%s", email);
-             //encrypt_decrypt(email);
+    char* logplace = malloc(sizeof(char)*50);
+      fscanf(fptr, "%s", logplace);
+        fclose(fptr);
+        
+        //encrypt_decrypt(email);
       
              printf("Current email: %s\n", email);
            
@@ -246,9 +261,83 @@ void printSettings() {
   }   
   
 }
-void printLog(){
- //TODO
+
+int printLog(){
+ 
+  char* logplace = malloc(sizeof(char)*50);
+  fscanf(fptr, "%s", logplace);
+  fclose(fptr);
+
+  fptr = fopen(logplace,"r");
+
+  if (fptr == NULL) {
+    printf("Unable to open logfile\n");
+    free(logplace);
+    exit(1);
+  }
+
+  char c = '0';
+  while((c = fgetc(fptr)) == EOF) {
+    printf()
+  }
+  
+  fclose(fptr);
+  free(logplace);
+  return 0;
+
 }
+
+int updateLog(enum Log_state state){
+ 
+  char* logplace = malloc(sizeof(char)*50);
+  fscanf(fptr, "%s", logplace);
+  fclose(fptr);
+
+  fptr = fopen(logplace,"a");
+
+  if (fptr == NULL) {
+    printf("Unable to open logfile\n");
+    free(logplace);
+    exit(1);
+  }
+  
+
+  //from cplusplus.com
+  time_t rawtime;
+  struct tm * timeinfo;
+
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  fputs(fptr, "[%s]: ", asctime(timeinfo));
+
+
+  if (state == BOOTED) {
+    fprintf("System was booted.\n---------------------------------------------------------------------------------\n");
+  } else if (state == LOCKED) {
+    if(alarmState == ON) {
+    fprintf("System was locked in armed state.\n---------------------------------------------------------------------------------\n");
+    } else {
+    fprintf("System was locked in unarmed state.\n---------------------------------------------------------------------------------\n");
+    }
+  } else if (state == TRIGGERED) {
+    fprintf("System was triggered.\n---------------------------------------------------------------------------------\n");
+  } else if (state == WRONG_PASSWORD) {
+    fprintf("Wrong password was input.\n---------------------------------------------------------------------------------\n");
+  } else if (state == UNLOCKED) {  
+   if(alarmState == ON) {
+      fprintf("System was unlocked from armed state.\n---------------------------------------------------------------------------------\n");
+      } else {
+      fprintf("System was unlocked from unarmed state.\n---------------------------------------------------------------------------------\n");
+      } 
+  }
+  
+
+  fclose(fptr);
+  free(logplace);
+  return 0;
+}
+
+
 
 void encrypt_decrypt(char *password){
  
@@ -306,6 +395,8 @@ int send_email() {
 
 void run_alarm(enum Alarm_state state) {
  
+  updateLog(LOCKED);
+
   // setting all pins to 0
   wiringPiSetupGpio();
 
@@ -342,7 +433,7 @@ void run_alarm(enum Alarm_state state) {
       send_email();
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
-
+        updateLog(TRIGGERED);
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
         }  
@@ -353,9 +444,10 @@ void run_alarm(enum Alarm_state state) {
     digitalWrite(BUZZERPIN, HIGH);
   }
      
-  delay(TEST_BUZZER_TIME);
   digitalWrite(BUZZERPIN, LOW);
   
+  updateLog(UNLOCKED);
+
   printf("Setting alarm off\n");
   digitalWrite(REDPIN, LOW);
   digitalWrite(BLUEPIN, LOW);
