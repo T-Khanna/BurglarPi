@@ -45,8 +45,6 @@ int introductionMenu(){
         
   delay(1000);
 
-  printf("Please enter your password \n");
-
   return (getAuthentication());
 
 }
@@ -96,6 +94,7 @@ int getAuthentication(){
   encrypt_decrypt(password);
 
   char input[MAX_BUFFER_SIZE];
+  printf("Please enter your password\n");
 
   for (int i = 5; i > 0; i--) {
     fgets(input, MAX_BUFFER_SIZE, stdin);
@@ -180,8 +179,7 @@ void printSettings() {
   
   // executing options
   switch(option) {
-    case 1:  printf("Enter current password: \n");
-             if (getAuthentication()) {
+    case 1:  if (getAuthentication()) {
                printf("Correct! Enter new password: \n");
                char password[MAX_PASSWORD_LEN];
                scanf("%s",password);
@@ -192,7 +190,7 @@ void printSettings() {
                fwrite(password, sizeof(password), 1, fptr);
                fclose(fptr);
 
-               printf("password changes successfully\n");
+               printf("Password changes successfully\n");
                delay(1000);
                printf("Returning to main menu\n");
                delay(500);
@@ -206,7 +204,7 @@ void printSettings() {
              fptr = fopen("email.txt","r");
 
              if (fptr == NULL) {
-               printf("Unable to password file\n");
+               printf("Unable to open email file\n");
                exit(1);
              }
              char *email = malloc(sizeof(char)*50);
@@ -316,9 +314,11 @@ void run_alarm(enum Alarm_state state) {
   
   // setting up input pin
   pinMode(PIRPIN, INPUT);
-  
+ 
+  system("clear");
+ 
   printf("Running alarm, current mode is:");
-  
+ 
   // displaying mode setting
   if (state == ON) {
     printf("ON\n");
@@ -343,14 +343,18 @@ void run_alarm(enum Alarm_state state) {
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
 
+        printf("To deactivate the alarm:\n");
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
         }  
         break; 
       }
     }
-  } else if (!getAuthentication()) {
-    digitalWrite(BUZZERPIN, HIGH);
+  } else {
+    printf("To deactivate the alarm:\n");
+    if (!getAuthentication()) {
+      digitalWrite(BUZZERPIN, HIGH);
+    }
   }
      
   delay(TEST_BUZZER_TIME);
