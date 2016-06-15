@@ -210,22 +210,56 @@ void printSettings() {
                executeOption(printMainMenu());
              }
              break;
-    case 2:  //TODO: Implement log lists  
+    case 2:  // opening data file
+             fptr = fopen("log_place.txt","r");
+
+             if (fptr == NULL) {
+               printf("Unable to password file\n");
+               exit(1);
+             }
+             char *logplace = malloc(sizeof(char)*50);
+             fscanf(fptr, "%s", email);
+        
+        //encrypt_decrypt(email);
+      
+             printf("Current logstate: %s\n", email);
+           
+             fclose(fptr);
+
+ 
+             printf("Change logpath address (y/n)\n");
+             getchar(); 
+             char option;
+             scanf("%c", &option);
+           
+             if (option == 'y') {
+               fptr = fopen("email.txt","w");
+               printf("Enter new logfile path address:\n");
+               char input[50];
+               scanf("%s",input);
+               //encrypt_decrypt(input);
+               fwrite(email, sizeof(input), 1, fptr);
+               fclose(fptr);
+               printf("logpath changed successfully\n");
+               delay(1000);
+             }
+
+             printf("Returning to main menu\n");
+             delay(500);
+             free(email);
+             executeOption(printMainMenu());
+             
              break;
 
     case 3:  // oprning data file
              fptr = fopen("email.txt","r");
 
              if (fptr == NULL) {
-               printf("Unable to password file\n");
+               printf("Unable to open email file\n");
                exit(1);
              }
              char *email = malloc(sizeof(char)*50);
              fscanf(fptr, "%s", email);
-    char* logplace = malloc(sizeof(char)*50);
-      fscanf(fptr, "%s", logplace);
-        fclose(fptr);
-        
         //encrypt_decrypt(email);
       
              printf("Current email: %s\n", email);
