@@ -48,12 +48,10 @@ int introductionMenu(){
   
   printf("Welcome to Burglar Alarm System\n\n\n");
 
-  printf("Developed by Tarun Sabbineni, Vinamara Agrawal, ");
-  printf("Tanmay Khanna, Balint Babik\n\n\n\n"); 
-        
-  printf("TESTING...");
+  printf("Developed by Tarun Sabbineni, Vinamra Agrawal, ");
+  printf("Tanmay Khanna, Balint Babik\n\n\n\n");  
+  
   delay(1000);
-  printf("TESTING!!!");
 
   updateLog(BOOTED);
 
@@ -106,6 +104,7 @@ int getAuthentication(){
   encrypt_decrypt(password);
 
   char input[MAX_BUFFER_SIZE];
+  printf("Please enter your password\n");
 
   for (int i = 5; i > 0; i--) {
     fgets(input, MAX_BUFFER_SIZE, stdin);
@@ -191,8 +190,7 @@ void printSettings() {
   
   // executing options
   switch(option) {
-    case 1:  printf("Enter current password: \n");
-             if (getAuthentication()) {
+    case 1:  if (getAuthentication()) {
                printf("Correct! Enter new password: \n");
                char password[MAX_PASSWORD_LEN];
                scanf("%s",password);
@@ -203,7 +201,7 @@ void printSettings() {
                fwrite(password, sizeof(password), 1, fptr);
                fclose(fptr);
 
-               printf("password changes successfully\n");
+               printf("Password changes successfully\n");
                delay(1000);
                printf("Returning to main menu\n");
                delay(500);
@@ -260,7 +258,6 @@ void printSettings() {
              }
              char *email = malloc(sizeof(char)*50);
              fscanf(fptr, "%s", email);
-        
         //encrypt_decrypt(email);
       
              printf("Current email: %s\n", email);
@@ -323,15 +320,17 @@ int printLog(){
 }
 
 int updateLog(enum Log_type state){
-  char* logplace = malloc(sizeof(char)*50);
+  
+  fptr = fopen("log_place.txt", "r");
+  char logplace[50]; 
   fscanf(fptr, "%s", logplace);
   fclose(fptr);
+
 
   fptr = fopen(logplace,"a");
 
   if (fptr == NULL) {
     printf("Unable to open logfile\n");
-    free(logplace);
     exit(1);
   }
   
@@ -367,7 +366,6 @@ int updateLog(enum Log_type state){
   
 
   fclose(fptr);
-  free(logplace);
   return 0;
 }
 
@@ -388,6 +386,7 @@ void encrypt_decrypt(char *password){
 int send_email() {
 
   //obtaining email stored in file
+  fptr = fopen("email.txt", "r");
   char* email = malloc(sizeof(char)*50);
   fscanf(fptr, "%s", email);
   fclose(fptr);
@@ -441,9 +440,11 @@ void run_alarm(enum Alarm_state state) {
   
   // setting up input pin
   pinMode(PIRPIN, INPUT);
-  
+ 
+  system("clear");
+ 
   printf("Running alarm, current mode is:");
-  
+ 
   // displaying mode setting
   if (state == ON) {
     printf("ON\n");
@@ -467,6 +468,8 @@ void run_alarm(enum Alarm_state state) {
       send_email();
       if (digitalRead(PIRPIN) == 1) {
         digitalWrite(BUZZERPIN, HIGH);
+
+        printf("To deactivate the alarm:\n");
         updateLog(TRIGGERED);
         if (getAuthentication()) {
           digitalWrite(BUZZERPIN, LOW);
@@ -474,8 +477,11 @@ void run_alarm(enum Alarm_state state) {
         break; 
       }
     }
-  } else if (!getAuthentication()) {
-    digitalWrite(BUZZERPIN, HIGH);
+  } else {
+    printf("To deactivate the alarm:\n");
+    if (!getAuthentication()) {
+      digitalWrite(BUZZERPIN, HIGH);
+    }
   }
      
   digitalWrite(BUZZERPIN, LOW);
